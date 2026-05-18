@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Karigaar Sans";
+  src: url("/fonts/karigaarSans-semibold.ttf") format("truetype");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "Karigaar Sans";
+  src: url("/fonts/karigaarSans-bold.ttf") format("truetype");
+  font-weight: 700;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #01493E;
+}
+
+/* #01493E  #097969- */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Inter", Arial, sans-serif;
+  --font-karigaar: "Karigaar Sans", "Inter", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Inter", Arial, sans-serif;
+}
+
+
+
