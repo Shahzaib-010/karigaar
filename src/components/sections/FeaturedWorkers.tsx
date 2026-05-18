@@ -1,31 +1,16 @@
-const workers = [
-  {
-    name: "Usman Ali",
-    trade: "AC Technician",
-    city: "Lahore",
-    rating: "4.9",
-    jobs: 186,
-    initials: "UA",
-  },
-  {
-    name: "Bilal Ahmed",
-    trade: "Refrigerator Expert",
-    city: "Karachi",
-    rating: "4.8",
-    jobs: 142,
-    initials: "BA",
-  },
-  {
-    name: "Naveed Khan",
-    trade: "Cooling Specialist",
-    city: "Islamabad",
-    rating: "4.7",
-    jobs: 119,
-    initials: "NK",
-  },
-];
+"use client";
+
+"use client";
+
+/* eslint-disable @next/next/no-img-element */
+
+import Link from "next/link";
+import { useLocale } from "next-intl";
+import { featuredWorkers } from "@/src/data/workers";
 
 export default function FeaturedWorkers() {
+  const locale = useLocale();
+
   return (
     <section className="bg-[#f7faf9] py-16 font-sans text-slate-950 sm:py-20 lg:py-24">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -37,22 +22,24 @@ export default function FeaturedWorkers() {
             Verified, Rated, and Ready
           </h2>
           <p className="mt-4 text-base font-semibold leading-7 text-slate-600 sm:text-lg">
-            Every worker below has been rated by real customers — no fake
+            Every worker below has been rated by real customers - no fake
             reviews, no shortcuts
           </p>
         </div>
 
         <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {workers.map((worker) => (
+          {featuredWorkers.map((worker) => (
             <article
-              key={worker.name}
+              key={worker.slug}
               className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:p-6"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[color-mix(in_srgb,var(--primary)_12%,white)] text-xl font-bold text-[var(--primary)]">
-                    {worker.initials}
-                  </div>
+                  <img
+                    src={worker.photo}
+                    alt={worker.name}
+                    className="h-16 w-16 shrink-0 rounded-2xl object-cover"
+                  />
                   <div>
                     <h3 className="text-xl font-bold text-slate-950">
                       {worker.name}
@@ -70,19 +57,19 @@ export default function FeaturedWorkers() {
 
               <div className="mt-7 rounded-2xl bg-slate-50 p-4">
                 <p className="text-base font-bold text-slate-900">
-                  <span className="text-amber-500">★</span> {worker.rating}
+                  <span className="text-amber-500">*</span> {worker.rating}
                   <span className="ml-2 text-sm font-semibold text-slate-500">
                     ({worker.jobs} jobs done)
                   </span>
                 </p>
               </div>
 
-              <button
-                type="button"
-                className="mt-5 min-h-12 w-full rounded-2xl bg-[var(--primary)] px-5 text-base font-bold text-white shadow-sm transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_88%,black)]"
+              <Link
+                href={`/${locale}/workers/${worker.slug}`}
+                className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-[var(--primary)] px-5 text-base font-bold text-white shadow-sm transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_88%,black)]"
               >
                 Book Now
-              </button>
+              </Link>
             </article>
           ))}
         </div>
@@ -92,7 +79,7 @@ export default function FeaturedWorkers() {
             href="#"
             className="inline-flex items-center text-base font-bold text-[var(--primary)] transition-opacity hover:opacity-75"
           >
-            See all workers →
+            See all workers {"->"}
           </a>
         </div>
       </div>
