@@ -34,6 +34,7 @@ const fallbackUser: NavbarUser = {
 export default function Navbar({ currentUser = null }: NavbarProps) {
   const locale = useLocale();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const user = currentUser;
 
@@ -51,20 +52,27 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
   const withLocale = (path: string) => `/${locale}/${path}`;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 shadow-sm backdrop-blur">
-      <div className="mx-auto flex min-h-20 w-full max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 font-sans shadow-sm backdrop-blur">
+      <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center gap-3 px-4 sm:min-h-20 sm:px-6 lg:gap-4 lg:px-8">
         <Link
           href={`/${locale}`}
-          className="shrink-0 text-2xl font-bold text-[var(--primary)]"
+          className="shrink-0 text-xl font-bold text-[var(--primary)] sm:text-2xl"
           aria-label="Karigaar home"
         >
           Karigaar
         </Link>
 
-        <nav className="hidden flex-1 items-center justify-center gap-8 text-sm font-semibold text-slate-700 lg:flex">
+        <nav className="hidden flex-1 items-center justify-center gap-6 text-sm font-semibold text-slate-700 md:flex lg:gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -78,12 +86,12 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
 
         <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
           <div
-            className="flex h-10 items-center rounded-full border border-slate-200 bg-slate-50 p-1 text-sm font-bold text-slate-600"
+            className="flex h-9 items-center rounded-full border border-slate-200 bg-slate-50 p-1 text-xs font-bold text-slate-600 sm:h-10 sm:text-sm"
             aria-label="Language selector"
           >
             <Link
               href="/en"
-              className={`rounded-full px-3 py-1.5 transition-colors ${
+              className={`rounded-full px-2.5 py-1.5 transition-colors sm:px-3 ${
                 locale === "en"
                   ? "bg-[var(--primary)] text-white"
                   : "hover:text-[var(--primary)]"
@@ -91,10 +99,10 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
             >
               EN
             </Link>
-            <span className="px-1 text-slate-300">/</span>
+            <span className="px-0.5 text-slate-300 sm:px-1">/</span>
             <Link
               href="/ur"
-              className={`rounded-full px-3 py-1.5 transition-colors ${
+              className={`rounded-full px-2.5 py-1.5 transition-colors sm:px-3 ${
                 locale === "ur"
                   ? "bg-[var(--primary)] text-white"
                   : "hover:text-[var(--primary)]"
@@ -105,7 +113,7 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
           </div>
 
           {user ? (
-            <div ref={profileRef} className="relative">
+            <div ref={profileRef} className="relative hidden md:block">
               <button
                 type="button"
                 aria-haspopup="menu"
@@ -154,7 +162,7 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
               ) : null}
             </div>
           ) : (
-            <div className="hidden items-center gap-2 sm:flex">
+            <div className="hidden items-center gap-2 md:flex">
               <Link
                 href={withLocale("login")}
                 className="rounded-full px-4 py-2 text-sm font-bold text-slate-700 transition-colors hover:text-[var(--primary)]"
@@ -169,20 +177,95 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
               </Link>
             </div>
           )}
+
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-expanded={isMenuOpen}
+            onClick={() => setIsMenuOpen(true)}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-2xl font-bold leading-none text-slate-900 shadow-sm md:hidden"
+          >
+            ≡
+          </button>
         </div>
       </div>
 
-      <nav className="flex gap-4 overflow-x-auto border-t border-slate-100 px-4 py-3 text-sm font-semibold text-slate-700 lg:hidden">
-        {navLinks.map((link) => (
+      <div
+        className={`fixed inset-0 z-[60] flex min-h-dvh flex-col bg-[#f7faf9] px-5 py-5 transition-transform duration-300 ease-out md:hidden ${
+          isMenuOpen ? "translate-y-0" : "-translate-y-full"
+        }`}
+        aria-hidden={!isMenuOpen}
+      >
+        <div className="flex items-center justify-between">
           <Link
-            key={link.href}
-            href={withLocale(link.href)}
-            className="shrink-0 transition-colors hover:text-[var(--primary)]"
+            href={`/${locale}`}
+            onClick={() => setIsMenuOpen(false)}
+            className="text-2xl font-bold text-[var(--primary)]"
+            aria-label="Karigaar home"
           >
-            {link.label}
+            Karigaar
           </Link>
-        ))}
-      </nav>
+
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={() => setIsMenuOpen(false)}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-950 text-3xl leading-none text-white"
+          >
+            ×
+          </button>
+        </div>
+
+        <nav className="flex flex-1 flex-col items-center justify-center gap-7 text-center">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={withLocale(link.href)}
+              onClick={() => setIsMenuOpen(false)}
+              className="text-4xl font-bold leading-none text-slate-950 transition-colors hover:text-[var(--primary)]"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="pb-4">
+          {!user ? (
+            <div className="grid gap-3">
+              <Link
+                href={withLocale("login")}
+                onClick={() => setIsMenuOpen(false)}
+                className="rounded-full border border-slate-200 bg-white px-5 py-4 text-center text-base font-bold text-slate-800"
+              >
+                Login
+              </Link>
+              <Link
+                href={withLocale("sign-up")}
+                onClick={() => setIsMenuOpen(false)}
+                className="rounded-full bg-[var(--primary)] px-5 py-4 text-center text-base font-bold text-white shadow-sm"
+              >
+                Sign Up
+              </Link>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--primary)] text-base font-bold text-white">
+                  {user.initials ?? user.name.slice(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-base font-bold text-slate-950">
+                    {user.name}
+                  </p>
+                  <p className="text-sm font-semibold text-slate-500">
+                    {user.role}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </header>
   );
 }

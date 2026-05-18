@@ -15,13 +15,16 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary: #01493E;
+  --primary: #23AD80;
 }
+
+/* #01493E  #097969- */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Karigaar Sans", sans-serif;
+  --font-sans: "Inter", Arial, sans-serif;
+  --font-karigaar: "Karigaar Sans", "Inter", Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,10 +37,8 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Karigaar Sans", sans-serif;
+  font-family: "Inter", Arial, sans-serif;
 }
-
-
 
 
 
