@@ -9,7 +9,7 @@ import Testimonials from "@/src/components/sections/Testimonials";
 
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col">
+    <main className="flex  flex-1 flex-col">
       
       <Hero />
       <HowItWorks />
