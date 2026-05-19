@@ -5,12 +5,12 @@ import Footer from "@/src/components/sections/Footer";
 import Hero from "@/src/components/sections/Hero";
 import HowItWorks from "@/src/components/sections/HowItWorks";
 import Testimonials from "@/src/components/sections/Testimonials";
-import Navbar from "../components/sections/Navbar";
+
 
 export default function Home() {
   return (
     <main className="flex flex-1 flex-col">
-      <Navbar />
+      
       <Hero />
       <HowItWorks />
       <BrowseByTrade />
@@ -18,7 +18,7 @@ export default function Home() {
       {/* <TrustStrip /> */}
       <DualCta />
       <Testimonials />
-      <Footer />
+      
     </main>
   );
 }
