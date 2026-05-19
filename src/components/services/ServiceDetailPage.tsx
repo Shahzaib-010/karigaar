@@ -433,6 +433,7 @@ export default function ServiceDetailPage({ locale, service }: Props) {
             </div>
           </section>
 
+          {/* build issue */}
           <section className="mt-12">
             <div className="max-w-3xl">
               <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
