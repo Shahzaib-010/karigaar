@@ -3,11 +3,15 @@ export type WorkerSummary = {
   name: string;
   trade: string;
   city: string;
+  location: string;
   rating: string;
   jobs: number;
   initials: string;
   verified: boolean;
   photo: string;
+  experience: string;
+  responseAverage: string;
+  startingPrice: string;
 };
 
 export type WorkerReview = {
@@ -565,18 +569,36 @@ export function getWorkerBySlug(slug: string) {
 export function getWorkerSummaries(slugs: string[]) {
   return slugs
     .map((slug) => getWorkerBySlug(slug))
-    .filter(Boolean)
+    .filter((worker): worker is WorkerProfile => Boolean(worker))
     .map(
-      ({ slug, name, trade, city, rating, jobs, initials, verified, photo }) => ({
+      ({
         slug,
         name,
         trade,
         city,
+        location,
         rating,
         jobs,
         initials,
         verified,
         photo,
+        experience,
+        responseAverage,
+        startingPrice,
+      }) => ({
+        slug,
+        name,
+        trade,
+        city,
+        location,
+        rating,
+        jobs,
+        initials,
+        verified,
+        photo,
+        experience,
+        responseAverage,
+        startingPrice,
       }),
     ) as WorkerSummary[];
 }
