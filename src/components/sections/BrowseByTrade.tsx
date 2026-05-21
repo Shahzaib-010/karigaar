@@ -1,11 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { ArrowRight } from "lucide-react";
+
+import { serviceIcons } from "@/lib/services-data";
 import { serviceCardLinks } from "@/src/data/services";
 
 export default function BrowseByTrade() {
   const locale = useLocale();
+  const t = useTranslations("browseByTrade");
   const isUrdu = locale === "ur";
 
   const translated = isUrdu
@@ -14,7 +18,6 @@ export default function BrowseByTrade() {
         subtitle: "ہر گھریلو کام کی سہولت یہاں موجود ہے - صحیح کام کے لیے صحیح ماہر تلاش کریں",
         available: "دستیاب",
         comingSoon: "جلد آ رہا ہے",
-        viewAll: "تمام زمروں کو دیکھیں",
       }
     : null;
 
@@ -32,18 +35,29 @@ export default function BrowseByTrade() {
 
         <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {serviceCardLinks.map((category) => {
+            const Icon = serviceIcons[category.slug];
+
             const content = (
               <>
                 <div className="flex items-start justify-between gap-3">
                   <span
-                    className={`flex h-12 w-12 items-center justify-center rounded-2xl text-2xl ${
+                    className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
                       category.available
-                        ? "bg-primary"
-                        : "bg-slate-100 grayscale"
+                        ? "bg-[#E6F4EF]"
+                        : "bg-slate-100"
                     }`}
                     aria-hidden="true"
                   >
-                    {category.icon}
+                    {Icon ? (
+                      <Icon
+                        className={`size-6 ${
+                          category.available
+                            ? "text-[var(--primary)]"
+                            : "text-slate-400"
+                        }`}
+                        strokeWidth={2}
+                      />
+                    ) : null}
                   </span>
 
                   {category.available ? (
@@ -101,12 +115,13 @@ export default function BrowseByTrade() {
         </div>
 
         <div className="mt-9 text-center">
-          <a
-            href="#"
-            className="inline-flex items-center text-base font-bold text-primary transition-opacity hover:opacity-75"
+          <Link
+            href={`/${locale}/services`}
+            className="inline-flex items-center gap-1.5 text-base font-bold text-primary transition-opacity hover:opacity-75"
           >
-            {translated?.viewAll ?? "View all categories"} {"->"}
-          </a>
+            {t("viewAll")}
+            <ArrowRight className="size-4" strokeWidth={2} aria-hidden />
+          </Link>
         </div>
       </div>
     </section>

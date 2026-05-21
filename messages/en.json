@@ -20,6 +20,7 @@
     "closeMenu": "Close menu",
     "links": {
       "browseWorkers": "Browse Workers",
+      "services": "Services",
       "postJob": "Post a Job",
       "howItWorks": "How It Works",
       "cities": "Cities"
@@ -168,5 +169,108 @@
     "generic": "Something went wrong.",
     "try_again": "Please try again."
   },
-  "retry": "Retry"
+  "retry": "Retry",
+  "servicesListing": {
+    "breadcrumb": {
+      "aria": "Breadcrumb",
+      "home": "Home",
+      "services": "Services"
+    },
+    "title": "Our Services",
+    "subtitle": "Every home job covered — find the right expert for the right work",
+    "count": "{count} services available",
+    "searchPlaceholder": "Search a service... e.g. plumber, AC repair",
+    "searchAria": "Search services",
+    "categoriesAria": "Filter services by category",
+    "gridAria": "Services grid",
+    "categories": {
+      "all": "All",
+      "repair": "Repair",
+      "installation": "Installation",
+      "cleaning": "Cleaning",
+      "electrical": "Electrical",
+      "plumbing": "Plumbing",
+      "carpentry": "Carpentry",
+      "painting": "Painting",
+      "appliances": "Appliances"
+    },
+    "fromPrice": "From Rs. {price}",
+    "reviews": "({count} reviews)",
+    "workersAvailable": "{count} workers available",
+    "bookNow": "Book Now",
+    "comingSoon": "Coming soon",
+    "popular": "Popular",
+    "popularSection": {
+      "title": "Most Booked This Month"
+    },
+    "empty": {
+      "title": "No services found",
+      "subtitle": "Try a different search or browse all services",
+      "clear": "Clear search"
+    },
+    "whyChoose": {
+      "aria": "Why choose Karigaar",
+      "verified.title": "Verified Workers",
+      "verified.body": "Every worker is CNIC verified and background checked",
+      "pricing.title": "Transparent Pricing",
+      "pricing.body": "Starting price shown upfront — no surprises",
+      "booking.title": "Fast Booking",
+      "booking.body": "Book in under 60 seconds, same-day slots available"
+    },
+    "plumber": {
+      "name": "Plumber",
+      "description": "Pipe leaks, taps, bathroom fitting, and drainage fixes"
+    },
+    "electrician": {
+      "name": "Electrician",
+      "description": "Wiring, switches, fans, and power issue repairs"
+    },
+    "carpenter": {
+      "name": "Carpenter",
+      "description": "Doors, wardrobes, furniture repair, and woodwork"
+    },
+    "painter": {
+      "name": "Painter",
+      "description": "Interior painting, wall putty, and polish work"
+    },
+    "acRepair": {
+      "name": "AC Repair",
+      "description": "AC servicing, gas refill, and cooling repairs"
+    },
+    "mason": {
+      "name": "Mason",
+      "description": "Roofing, wall repair, and structural masonry"
+    },
+    "welder": {
+      "name": "Welder",
+      "description": "Grills, gates, and custom iron fabrication"
+    },
+    "cleaning": {
+      "name": "Cleaning",
+      "description": "Deep cleaning, sofa wash, and carpet care"
+    },
+    "geyser": {
+      "name": "Geyser",
+      "description": "Geyser installation, repair, and maintenance"
+    },
+    "tileWork": {
+      "name": "Tile Work",
+      "description": "Bathroom, kitchen, and floor tile installation"
+    },
+    "gateGrill": {
+      "name": "Gate & Grill",
+      "description": "Security gates, grills, and iron door fitting"
+    },
+    "applianceRepair": {
+      "name": "Appliance Repair",
+      "description": "Fridge, washing machine, and home appliance fixes"
+    }
+  },
+  "browseByTrade": {
+    "viewAll": "View all categories"
+  },
+  "workerDashboard": {
+    "servicesBrowse": "Browse all services",
+    "servicesBrowseDescription": "Explore every home service category available on Karigaar."
+  }
 }

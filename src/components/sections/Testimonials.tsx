@@ -2,23 +2,25 @@
 
 import { useLocale } from "next-intl";
 
+import StarRating from "@/components/ui/StarRating";
+
 const reviews = [
   {
-    rating: "★★★★★",
+    rating: 5,
     quote:
       "Excellent work done. He arrived on time, cleaned up after himself, and the price was very reasonable. Will definitely call again.",
     author: "Kamran Ahmed, Lahore",
     booking: "Plumber booking",
   },
   {
-    rating: "★★★★★",
+    rating: 5,
     quote:
       "First time using Karigaar and honestly I was skeptical. But the electrician fixed everything in 20 minutes flat. No more stress with home repairs.",
     author: "Saba Malik, Karachi",
     booking: "Electrician booking",
   },
   {
-    rating: "★★★★☆",
+    rating: 4,
     quote:
       "AC service was great. Booking on the app was so simple. Everything was clearly explained and the worker was professional throughout.",
     author: "Tariq Hussain, Faisalabad",
@@ -55,9 +57,11 @@ export default function Testimonials() {
               key={review.author}
               className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm ring-1 ring-black/5 transition-all hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]"
             >
-              <p className="text-lg font-bold tracking-[0.12em] text-primary">
-                {review.rating}
-              </p>
+              <StarRating
+                rating={review.rating}
+                starClassName="size-5"
+                className="gap-1"
+              />
               <blockquote className="mt-5 text-base font-semibold leading-7 text-slate-700">
                 &ldquo;{review.quote}&rdquo;
               </blockquote>

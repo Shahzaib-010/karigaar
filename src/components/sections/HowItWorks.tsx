@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
+import { ArrowRight } from "lucide-react";
 
 const steps = [
   {
@@ -70,12 +71,11 @@ export default function HowItWorks() {
                 {copy?.steps[index].body ?? step.body}
               </p>
 
-              <span
-                className={`absolute bottom-5 right-6 text-5xl font-semibold leading-none sm:text-6xl md:bottom-5 md:right-5 lg:bottom-6 lg:right-7 ${step.arrowClassName}`}
-                aria-hidden="true"
-              >
-                →
-              </span>
+              <ArrowRight
+                className={`absolute bottom-5 right-6 size-10 sm:size-12 md:bottom-5 md:right-5 lg:bottom-6 lg:right-7 lg:size-14 ${step.arrowClassName}`}
+                strokeWidth={1.75}
+                aria-hidden
+              />
             </article>
           ))}
         </div>

@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useLocale } from "next-intl";
+import { ArrowRight, Search, UserPlus } from "lucide-react";
 
 export default function DualCta() {
   const locale = useLocale();
@@ -31,12 +33,14 @@ export default function DualCta() {
               </p>
             </div>
 
-            <a
-              href="#"
-              className="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-[var(--primary)] px-6 text-base font-bold text-white shadow-sm transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_88%,black)] sm:w-fit"
+            <Link
+              href={`/${locale}/workers`}
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[var(--primary)] px-6 text-base font-bold text-white shadow-sm transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_88%,black)] sm:w-fit"
             >
+              <Search className="size-4" strokeWidth={2} aria-hidden />
               {copy?.needButton ?? "Find a Worker"}
-            </a>
+              <ArrowRight className="size-4" strokeWidth={2} aria-hidden />
+            </Link>
           </div>
         </article>
 
@@ -51,12 +55,14 @@ export default function DualCta() {
               </p>
             </div>
 
-            <a
-              href="#"
-              className="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-white px-6 text-base font-bold text-[var(--primary)] shadow-sm transition-opacity hover:opacity-90 sm:w-fit"
+            <Link
+              href={`/${locale}/signup`}
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-white px-6 text-base font-bold text-[var(--primary)] shadow-sm transition-opacity hover:opacity-90 sm:w-fit"
             >
+              <UserPlus className="size-4" strokeWidth={2} aria-hidden />
               {copy?.workButton ?? "Register as a Worker"}
-            </a>
+              <ArrowRight className="size-4" strokeWidth={2} aria-hidden />
+            </Link>
           </div>
         </article>
       </div>

@@ -20,6 +20,7 @@
     "closeMenu": "مینو بند کریں",
     "links": {
       "browseWorkers": "کاریگر دیکھیں",
+      "services": "خدمات",
       "postJob": "کام پوسٹ کریں",
       "howItWorks": "طریقہ کار",
       "cities": "شہر"
@@ -169,5 +170,108 @@
     "generic": "کچھ غلط ہو گیا۔",
     "try_again": "براہ کرم دوبارہ کوشش کریں۔"
   },
-  "retry": "دوبارہ کوشش کریں"
+  "retry": "دوبارہ کوشش کریں",
+  "servicesListing": {
+    "breadcrumb": {
+      "aria": "بریڈکرمب",
+      "home": "ہوم",
+      "services": "خدمات"
+    },
+    "title": "ہماری خدمات",
+    "subtitle": "ہر گھریلو کام کے لیے صحیح ماہر تلاش کریں",
+    "count": "{count} خدمات دستیاب",
+    "searchPlaceholder": "خدمت تلاش کریں... مثلاً پلمبر، اے سی مرمت",
+    "searchAria": "خدمات تلاش کریں",
+    "categoriesAria": "زمرے کے حساب سے خدمات فلٹر کریں",
+    "gridAria": "خدمات گرڈ",
+    "categories": {
+      "all": "تمام",
+      "repair": "مرمت",
+      "installation": "انسٹالیشن",
+      "cleaning": "صفائی",
+      "electrical": "بجلی",
+      "plumbing": "پلمبنگ",
+      "carpentry": "بڑھئی",
+      "painting": "رنگ سازی",
+      "appliances": "آلات"
+    },
+    "fromPrice": "Rs. {price} سے",
+    "reviews": "({count} جائزے)",
+    "workersAvailable": "{count} کاریگر دستیاب",
+    "bookNow": "ابھی بک کریں",
+    "comingSoon": "جلد آ رہا ہے",
+    "popular": "مشہور",
+    "popularSection": {
+      "title": "اس ماہ سب سے زیادہ بکنگ"
+    },
+    "empty": {
+      "title": "کوئی خدمت نہیں ملی",
+      "subtitle": "مختلف تلاش کریں یا تمام خدمات دیکھیں",
+      "clear": "تلاش صاف کریں"
+    },
+    "whyChoose": {
+      "aria": "کاریگر کیوں منتخب کریں",
+      "verified.title": "تصدیق شدہ کاریگر",
+      "verified.body": "ہر کاریگر شناختی کارڈ سے تصدیق شدہ اور پس منظر چیک شدہ",
+      "pricing.title": "شفاف قیمت",
+      "pricing.body": "شروعاتی قیمت پہلے سے — کوئی حیرانی نہیں",
+      "booking.title": "تیز بکنگ",
+      "booking.body": "60 سیکنڈ میں بک کریں، اسی دن سلاٹ دستیاب"
+    },
+    "plumber": {
+      "name": "پلمبر",
+      "description": "پائپ لیک، ٹیپ، باتھ روم فٹنگ اور نکاسی کی مرمت"
+    },
+    "electrician": {
+      "name": "الیکٹریشن",
+      "description": "وائرنگ، سوئچ، پنکھے اور بجلی کے مسائل"
+    },
+    "carpenter": {
+      "name": "بڑھئی",
+      "description": "دروازے، الماری، فرنیچر مرمت اور لکڑی کا کام"
+    },
+    "painter": {
+      "name": "رنگ ساز",
+      "description": "اندرونی پینٹ، دیوار پٹتی اور پالش"
+    },
+    "acRepair": {
+      "name": "اے سی مرمت",
+      "description": "اے سی سروس، گیس ریفل اور کولنگ مرمت"
+    },
+    "mason": {
+      "name": "مستری",
+      "description": "چھت، دیوار مرمت اور تعمیراتی کام"
+    },
+    "welder": {
+      "name": "ویلڈر",
+      "description": "گرل، گیٹ اور لوہے کا کام"
+    },
+    "cleaning": {
+      "name": "صفائی",
+      "description": "گہری صفائی، صوفہ اور قالین دھلائی"
+    },
+    "geyser": {
+      "name": "گیزر",
+      "description": "گیزر انسٹالیشن، مرمت اور دیکھ بھال"
+    },
+    "tileWork": {
+      "name": "ٹائل کا کام",
+      "description": "باتھ روم، باورچی خانہ اور فرش ٹائل"
+    },
+    "gateGrill": {
+      "name": "گیٹ و گرل",
+      "description": "سیکیورٹی گیٹ، گرل اور لوہے کے دروازے"
+    },
+    "applianceRepair": {
+      "name": "آلات کی مرمت",
+      "description": "فرج، واشنگ مشین اور گھریلو آلات کی مرمت"
+    }
+  },
+  "browseByTrade": {
+    "viewAll": "تمام زمروں کو دیکھیں"
+  },
+  "workerDashboard": {
+    "servicesBrowse": "تمام خدمات دیکھیں",
+    "servicesBrowseDescription": "کاریگر پر دستیاب ہر گھریلو خدمت کا زمرہ دیکھیں۔"
+  }
 }

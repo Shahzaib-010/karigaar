@@ -1,3 +1,5 @@
+import { ArrowUpRight } from "lucide-react";
+
 const footerColumns = [
   {
     title: "Features",
@@ -59,7 +61,13 @@ export default function Footer() {
         <section className="mt-10 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-start">
           <div className="max-w-sm">
             <div className="inline-flex items-center gap-2 text-[2rem] font-bold leading-none text-[var(--primary)]">
-              <span className="text-[1.75rem]">↗</span>
+              <span className="flex size-8 items-center justify-center rounded-lg bg-[#E6F4EF]">
+                <ArrowUpRight
+                  className="size-5 text-[var(--primary)]"
+                  strokeWidth={2.25}
+                  aria-hidden
+                />
+              </span>
               <span>karigaar</span>
             </div>
             <p className="mt-4 text-sm font-semibold leading-6 text-slate-500">

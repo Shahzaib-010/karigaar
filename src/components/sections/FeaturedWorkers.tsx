@@ -4,6 +4,8 @@
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
+import { ArrowRight, BadgeCheck, Star } from "lucide-react";
+
 import { featuredWorkers } from "@/src/data/workers";
 
 export default function FeaturedWorkers() {
@@ -59,15 +61,21 @@ export default function FeaturedWorkers() {
                   </div>
                 </div>
 
-                <span className="rounded-full bg-[var(--primary)] px-3 py-1 text-xs font-bold text-white">
+                <span className="inline-flex items-center gap-1 rounded-full bg-[var(--primary)] px-3 py-1 text-xs font-bold text-white">
+                  <BadgeCheck className="size-3.5" strokeWidth={2.5} aria-hidden />
                   {copy?.verified ?? "Verified"}
                 </span>
               </div>
 
               <div className="mt-7 rounded-2xl bg-slate-50 p-4">
-                <p className="text-base font-bold text-slate-900">
-                  <span className="text-amber-500">*</span> {worker.rating}
-                  <span className="ml-2 text-sm font-semibold text-slate-500">
+                <p className="flex items-center gap-2 text-base font-bold text-slate-900">
+                  <Star
+                    className="size-4 fill-[#F59E0B] text-[#F59E0B]"
+                    strokeWidth={0}
+                    aria-hidden
+                  />
+                  {worker.rating}
+                  <span className="text-sm font-semibold text-slate-500">
                     ({worker.jobs} jobs done)
                   </span>
                 </p>
@@ -86,9 +94,10 @@ export default function FeaturedWorkers() {
         <div className="mt-9 text-center">
           <Link
             href={`/${locale}/workers`}
-            className="inline-flex items-center text-base font-bold text-[var(--primary)] transition-opacity hover:opacity-75"
+            className="inline-flex items-center gap-1.5 text-base font-bold text-[var(--primary)] transition-opacity hover:opacity-75"
           >
-            {copy?.seeAll ?? "See all workers"} {"->"}
+            {copy?.seeAll ?? "See all workers"}
+            <ArrowRight className="size-4" strokeWidth={2} aria-hidden />
           </Link>
         </div>
       </div>

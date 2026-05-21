@@ -18,9 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { label: "browseWorkers", href: "workers" },
-  { label: "postJob", href: "post-a-job" },
-  { label: "howItWorks", href: "how-it-works" },
-  { label: "cities", href: "cities" },
+  { label: "services", href: "services" },
 ] as const;
 
 const menuItems = [

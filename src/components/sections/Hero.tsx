@@ -2,14 +2,26 @@
 
 import Link from "next/link";
 import { useLocale } from "next-intl";
+import {
+  Check,
+  Hammer,
+  HardHat,
+  MapPin,
+  Paintbrush,
+  Search,
+  Wind,
+  Wrench,
+  Zap,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const categories = [
-  { icon: "🔧", label: "Plumber" },
-  { icon: "⚡", label: "Electrician" },
-  { icon: "🪚", label: "Carpenter" },
-  { icon: "🎨", label: "Painter" },
-  { icon: "❄️", label: "AC Repair" },
-  { icon: "🏠", label: "Mason" },
+const categories: { slug: string; icon: LucideIcon; label: string }[] = [
+  { slug: "plumber", icon: Wrench, label: "Plumber" },
+  { slug: "electrician", icon: Zap, label: "Electrician" },
+  { slug: "carpenter", icon: Hammer, label: "Carpenter" },
+  { slug: "painter", icon: Paintbrush, label: "Painter" },
+  { slug: "ac-repair", icon: Wind, label: "AC Repair" },
+  { slug: "mason", icon: HardHat, label: "Mason" },
 ];
 
 const trustItems = [
@@ -57,12 +69,11 @@ export default function Hero() {
           <form className="mt-7 rounded-2xl border border-slate-200 bg-white p-2 text-left shadow-[0_24px_70px_rgba(15,23,42,0.10)] sm:mt-9">
             <div className="grid gap-2 md:grid-cols-[1fr_auto] xl:grid-cols-[1fr_auto_auto]">
               <label className="flex min-h-14 min-w-0 items-center gap-3 rounded-xl bg-slate-50 px-4 md:col-span-2 xl:col-span-1">
-                <span
-                  className="shrink-0 text-lg font-bold text-slate-400"
-                  aria-hidden="true"
-                >
-                  ⌕
-                </span>
+                <Search
+                  className="size-5 shrink-0 text-slate-400"
+                  strokeWidth={2}
+                  aria-hidden
+                />
                 <input
                   type="search"
                   placeholder={copy?.placeholder ?? "What work do you need? e.g. plumber, electrician..."}
@@ -72,9 +83,10 @@ export default function Hero() {
 
               <button
                 type="button"
-                className="min-h-14 rounded-xl border border-slate-200 bg-white px-5 text-center text-sm font-bold text-slate-700 transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)] md:text-left"
+                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-700 transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)] md:justify-start"
               >
-                📍 {copy?.city ?? "Select your city"}
+                <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                {copy?.city ?? "Select your city"}
               </button>
 
               <button
@@ -87,26 +99,36 @@ export default function Hero() {
           </form>
 
           <div className="mt-5 flex flex-wrap justify-center gap-2 sm:mt-6 sm:gap-2.5">
-            {categories.map((category, index) => (
-              <Link
-                key={category.label}
-                href={`/${locale}/workers?category=${encodeURIComponent(
-                  category.label.toLowerCase(),
-                )}`}
-                className="rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)] sm:px-4 sm:py-2.5 sm:text-sm"
-              >
-                <span className="mr-2" aria-hidden="true">
-                  {category.icon}
-                </span>
-                {isUrdu ? copy?.categories[index] ?? category.label : category.label}
-              </Link>
-            ))}
+            {categories.map((category, index) => {
+              const Icon = category.icon;
+
+              return (
+                <Link
+                  key={category.slug}
+                  href={`/${locale}/workers?category=${encodeURIComponent(
+                    category.label.toLowerCase(),
+                  )}`}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)] sm:px-4 sm:py-2.5 sm:text-sm"
+                >
+                  <Icon
+                    className="size-4 shrink-0 text-[var(--primary)]"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  {isUrdu ? copy?.categories[index] ?? category.label : category.label}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs font-bold text-slate-500 sm:gap-x-5 sm:text-sm">
             {(isUrdu ? copy?.trust ?? trustItems : trustItems).map((item) => (
               <span key={item} className="flex items-center gap-2">
-                <span className="text-[var(--primary)]">✓</span>
+                <Check
+                  className="size-4 shrink-0 text-[var(--primary)]"
+                  strokeWidth={2.5}
+                  aria-hidden
+                />
                 {item}
               </span>
             ))}
