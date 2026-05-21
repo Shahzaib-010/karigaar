@@ -8,7 +8,7 @@
     "welcome": "خوش آمدید"
   },
   "nav": {
-    "home": "ہوم"
+    "home": "گھر"
   },
   "navbar": {
     "brand": "کاریگر",
@@ -23,7 +23,8 @@
       "services": "خدمات",
       "postJob": "کام پوسٹ کریں",
       "howItWorks": "طریقہ کار",
-      "cities": "شہر"
+      "cities": "شہر",
+       "home": "گھر"
     },
     "menu": {
       "profile": "میرا پروفائل",
