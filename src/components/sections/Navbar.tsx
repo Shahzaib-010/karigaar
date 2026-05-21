@@ -17,8 +17,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
+  { label: "home", href: "/" },
   { label: "browseWorkers", href: "workers" },
   { label: "services", href: "services" },
+  { label: "postJob", href: "post-a-job" },
 ] as const;
 
 const menuItems = [
