@@ -41,9 +41,9 @@ export default function Hero() {
     <section className="flex flex-1 bg-[#f7faf9] font-sans text-slate-950">
       <div className="mx-auto flex min-h-[calc(100vh-112px)] w-full max-w-7xl items-center px-4 py-12 sm:min-h-[calc(100vh-128px)] sm:px-6 sm:py-16 lg:min-h-[calc(100vh-80px)] lg:px-8 lg:py-20">
         <div className="mx-auto w-full text-center">
-          <p className="mb-4 inline-flex max-w-full rounded-full border border-[color-mix(in_srgb,var(--primary)_18%,white)] bg-white px-3.5 py-2 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--primary)] shadow-sm sm:mb-5 sm:px-4 sm:text-xs sm:tracking-[0.18em]">
+          {/* <p className="mb-4 inline-flex max-w-full rounded-full border border-[color-mix(in_srgb,var(--primary)_18%,white)] bg-white px-3.5 py-2 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--primary)] shadow-sm sm:mb-5 sm:px-4 sm:text-xs sm:tracking-[0.18em]">
             {copy?.eyebrow ?? "Pakistan&apos;s #1 Skilled Worker Platform"}
-          </p>
+          </p> */}
 
           <h1 className="font-karigaar mx-auto max-w-4xl text-[2.75rem] font-bold leading-[1.02] text-slate-950 min-[380px]:text-5xl sm:text-6xl lg:text-7xl">
             {copy?.title ?? "Your Karigaar,"}
