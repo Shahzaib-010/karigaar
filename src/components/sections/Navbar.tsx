@@ -10,6 +10,7 @@ import {
   IconUser,
   IconX,
 } from "@tabler/icons-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -89,12 +90,17 @@ export default function Navbar() {
       <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center gap-3 px-4 sm:min-h-20 sm:px-6 lg:gap-4 lg:px-8">
         <Link
           href={`/${locale}`}
-          className={`shrink-0 font-karigaar text-xl font-bold text-primary sm:text-2xl ${
-            isRtl ? "ur-brand" : ""
-          }`}
+          className="shrink-0"
           aria-label={t("homeAria")}
         >
-          {t("brand")}
+          <Image
+            src="/images/karigaar-logo.jpeg"
+            alt={t("brand")}
+            width={160}
+            height={40}
+            priority
+            className="h-8 w-auto sm:h-20"
+          />
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center gap-6 text-sm font-semibold text-muted-foreground md:flex lg:gap-8">

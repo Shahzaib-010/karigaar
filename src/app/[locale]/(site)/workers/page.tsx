@@ -267,7 +267,7 @@ export default function WorkersPage() {
                 <option value="price_asc">{t("sort.price_asc")}</option>
                 <option value="price_desc">{t("sort.price_desc")}</option>
               </select>
-              <button
+              {/* <button
                 onClick={() =>
                   dispatch({ type: "set", payload: { minRating: 4, page: 1 } })
                 }
@@ -293,7 +293,7 @@ export default function WorkersPage() {
                 }`}
               >
                 {t("filters.available")}
-              </button>
+              </button> */}
             </div>
             <div className="text-sm text-[#6B6B6B]">
               {total} {t("workers.found")}

@@ -1,4 +1,5 @@
-import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 const footerColumns = [
   {
@@ -60,16 +61,15 @@ export default function Footer() {
 
         <section className="mt-10 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-start">
           <div className="max-w-sm">
-            <div className="inline-flex items-center gap-2 text-[2rem] font-bold leading-none text-[var(--primary)]">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-[#E6F4EF]">
-                <ArrowUpRight
-                  className="size-5 text-[var(--primary)]"
-                  strokeWidth={2.25}
-                  aria-hidden
-                />
-              </span>
-              <span>karigaar</span>
-            </div>
+            <Link href="/" aria-label="Karigaar">
+              <Image
+                src="/images/karigaar-logo.jpeg"
+                alt="Karigaar"
+                width={160}
+                height={40}
+                className="h-8 w-auto sm:h-20"
+              />
+            </Link>
             <p className="mt-4 text-sm font-semibold leading-6 text-slate-500">
               Make every repair, service, and booking feel simpler, safer, and
               more reliable.
