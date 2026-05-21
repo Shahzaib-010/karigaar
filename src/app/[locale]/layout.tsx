@@ -45,7 +45,7 @@ export default async function LocaleLayout({
   return (
     <div
       dir={isUrdu ? "rtl" : "ltr"}
-      className={isUrdu ? "urdu-font min-h-full flex flex-col" : "min-h-full flex flex-col"}
+      className={isUrdu ? "urdu-font flex flex-1 flex-col" : "flex flex-1 flex-col"}
     >
       <NextIntlClientProvider locale={locale} messages={messages}>
         {children}

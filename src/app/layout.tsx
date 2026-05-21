@@ -26,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("h-full", "antialiased", openSans.variable, "font-sans", geist.variable)}>
-      <body className="min-h-full">
+    <html lang="en" className={cn("min-h-screen", "antialiased", openSans.variable, "font-sans", geist.variable)}>
+      <body className="flex min-h-screen flex-col">
         <TooltipProvider>
           <AuthProvider>
             <NextIntlClientProvider locale="en" messages={enMessages}>

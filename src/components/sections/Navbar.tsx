@@ -97,7 +97,7 @@ export default function Navbar() {
           {t("brand")}
         </Link>
 
-        <nav className="hidden flex-1 items-center justify-center gap-6 text-sm font-semibold text-muted md:flex lg:gap-8">
+        <nav className="hidden flex-1 items-center justify-center gap-6 text-sm font-semibold text-muted-foreground md:flex lg:gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -113,7 +113,7 @@ export default function Navbar() {
 
         <div className="ms-auto flex shrink-0 items-center gap-2 sm:gap-3">
           <div
-            className="flex h-10 items-center rounded-xl border border-border bg-background p-1 text-xs font-bold text-muted sm:text-sm"
+            className="flex h-10 items-center rounded-xl border border-border bg-background p-1 text-xs font-bold text-muted-foreground sm:text-sm"
             aria-label={t("language")}
           >
             <Link
@@ -271,7 +271,7 @@ export default function Navbar() {
                   <p className="text-base font-bold text-foreground">
                     {user.name}
                   </p>
-                  <p className="text-sm font-semibold text-muted">
+                  <p className="text-sm font-semibold text-muted-foreground">
                     {user.role}
                   </p>
                 </div>

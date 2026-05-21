@@ -7,10 +7,10 @@ type SiteLayoutProps = {
 
 export default function SiteLayout({ children }: SiteLayoutProps) {
   return (
-    <>
+    <div className="flex flex-1 flex-col">
       <Navbar />
       {children}
       <Footer />
-    </>
+    </div>
   );
 }
