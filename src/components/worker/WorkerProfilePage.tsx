@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import { useState } from "react";
 import type { WorkerProfile, WorkerReview, WorkerSummary } from "@/src/data/workers";
 
@@ -41,6 +42,8 @@ export default function WorkerProfilePage({
   worker,
   similarWorkers,
 }: Props) {
+  const currentLocale = useLocale();
+  const isUrdu = locale === "ur" || currentLocale === "ur";
   const [selectedDay, setSelectedDay] = useState(
     worker.availability.find((day) => day.status === "available")?.day ??
       worker.availability[0]?.day,
@@ -50,6 +53,43 @@ export default function WorkerProfilePage({
   const [activePhoto, setActivePhoto] = useState<number | null>(null);
 
   const visibleReviews = filterReviews(worker.reviews, selectedFilter);
+
+  const copy = isUrdu
+    ? {
+        pin: "مقام",
+        joined: "شامل ہوئے",
+        jobsCompleted: "کام مکمل کیے",
+        share: "شیئر کریں",
+        save: "محفوظ کریں",
+        call: "ابھی کال کریں",
+        book: "ابھی بک کریں",
+        rating: "ریٹنگ",
+        experience: "تجربہ",
+        averageResponse: "اوسط جواب",
+        about: "کے بارے میں",
+        services: "دی جانے والی خدمات",
+        service: "سروس",
+        price: "ابتدائی قیمت",
+        duration: "مدت",
+        finalPrice: "حتمی قیمت کام کی پیچیدگی کے مطابق بدل سکتی ہے۔ کام شروع ہونے سے پہلے بات اور اتفاق کیا جاتا ہے۔",
+        availability: "اس ہفتے دستیابی",
+        pastWork: "پچھلا کام",
+        customerReviews: "صارفین کے ریویوز",
+        overall: "مجموعی ریٹنگ",
+        reviews: "ریویوز",
+        loadMore: "مزید ریویوز لوڈ کریں",
+        serviceArea: "سروس ایریا",
+        coverage: "کوریج رینج",
+        travel: "سفر کے چارجز بنیادی علاقے سے باہر لاگو ہو سکتے ہیں۔ بکنگ کے وقت تصدیق کریں۔",
+        other: "دیگر کاریگر",
+        nearby: "آپ کے قریب",
+        unavailable: "اگر یہ کاریگر دستیاب نہ ہو",
+        bookNow: "ابھی بک کریں",
+        close: "بند کریں",
+        filters: ["تمام", "5 اسٹار", "تازہ ترین", "فوٹو کے ساتھ"],
+        status: { available: "دستیاب", full: "مکمل", off: "چھٹی" },
+      }
+    : null;
 
   return (
     <>
@@ -81,14 +121,14 @@ export default function WorkerProfilePage({
                   {worker.trade}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-slate-500">
-                  <span>Pin {worker.location}</span>
-                  <span>Joined {worker.joined}</span>
+                  <span>{copy?.pin ?? "Pin"} {worker.location}</span>
+                  <span>{copy?.joined ?? "Joined"} {worker.joined}</span>
                 </div>
                 <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold text-slate-600 sm:text-base">
                   <span className="text-lg font-bold text-amber-500">
                     * {worker.rating}
                   </span>
-                  <span>{worker.jobs} jobs completed</span>
+                  <span>{worker.jobs} {copy?.jobsCompleted ?? "jobs completed"}</span>
                   <span>{worker.responseTime}</span>
                 </div>
               </div>
@@ -96,10 +136,10 @@ export default function WorkerProfilePage({
 
             <div className="hidden items-center gap-2 sm:flex">
               <button className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm">
-                Share
+                {copy?.share ?? "Share"}
               </button>
               <button className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm">
-                Save
+                {copy?.save ?? "Save"}
               </button>
             </div>
           </div>
@@ -111,10 +151,10 @@ export default function WorkerProfilePage({
               </div>
               <div className="grid gap-2 sm:grid-cols-2 lg:w-auto">
                 <button className="min-h-11 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-800">
-                  Call Now
+                  {copy?.call ?? "Call Now"}
                 </button>
                 <button className="min-h-11 rounded-2xl bg-[var(--primary)] px-5 text-sm font-bold text-white shadow-sm">
-                  Book Now
+                  {copy?.book ?? "Book Now"}
                 </button>
               </div>
             </div>
@@ -122,10 +162,10 @@ export default function WorkerProfilePage({
 
           <section className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {[
-              { label: "Rating", value: `${worker.rating} *` },
-              { label: "Jobs Done", value: `${worker.jobs}` },
-              { label: "Experience", value: worker.experience },
-              { label: "Avg. Response", value: worker.responseAverage },
+              { label: copy?.rating ?? "Rating", value: `${worker.rating} *` },
+              { label: copy?.jobsCompleted ?? "Jobs Done", value: `${worker.jobs}` },
+              { label: copy?.experience ?? "Experience", value: worker.experience },
+              { label: copy?.averageResponse ?? "Avg. Response", value: worker.responseAverage },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -141,7 +181,7 @@ export default function WorkerProfilePage({
 
           <section className="mt-10 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-              About {worker.name.split(" ")[0]}
+              {copy?.about ?? "About"} {worker.name.split(" ")[0]}
             </h2>
             <p className="mt-4 max-w-4xl text-base font-semibold leading-8 text-slate-600">
               &ldquo;{worker.bio}&rdquo;
@@ -160,15 +200,15 @@ export default function WorkerProfilePage({
 
           <section className="mt-10 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-              Services Offered
+              {copy?.services ?? "Services Offered"}
             </h2>
             <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200">
               <table className="w-full text-left">
                 <thead className="bg-[#f7faf9]">
                   <tr className="text-sm font-bold text-slate-600">
-                    <th className="px-4 py-4 sm:px-5">Service</th>
-                    <th className="px-4 py-4 sm:px-5">Starting Price</th>
-                    <th className="px-4 py-4 sm:px-5">Duration</th>
+                    <th className="px-4 py-4 sm:px-5">{copy?.service ?? "Service"}</th>
+                    <th className="px-4 py-4 sm:px-5">{copy?.price ?? "Starting Price"}</th>
+                    <th className="px-4 py-4 sm:px-5">{copy?.duration ?? "Duration"}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -188,14 +228,13 @@ export default function WorkerProfilePage({
               </table>
             </div>
             <p className="mt-4 text-sm font-semibold text-slate-500">
-              Final price may vary based on job complexity. Discussed and agreed
-              before work begins.
+              {copy?.finalPrice ?? "Final price may vary based on job complexity. Discussed and agreed before work begins."}
             </p>
           </section>
 
           <section className="mt-10 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-              Availability This Week
+              {copy?.availability ?? "Availability This Week"}
             </h2>
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
               {worker.availability.map((day) => {
@@ -219,7 +258,7 @@ export default function WorkerProfilePage({
                   >
                     <p className="text-sm font-bold">{day.day}</p>
                     <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em]">
-                      {day.status}
+                      {isUrdu ? copy?.status?.[day.status] ?? day.status : day.status}
                     </p>
                   </button>
                 );
@@ -239,11 +278,12 @@ export default function WorkerProfilePage({
 
           <section className="mt-10 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-              Past Work
+              {copy?.pastWork ?? "Past Work"}
             </h2>
             <p className="mt-3 text-base font-semibold text-slate-600">
-              Photos submitted by {worker.name.split(" ")[0]} and verified by
-              customers
+              {isUrdu
+                ? `${worker.name.split(" ")[0]} کی بھیجی گئی تصاویر اور صارفین کی طرف سے تصدیق شدہ`
+                : `Photos submitted by ${worker.name.split(" ")[0]} and verified by customers`}
             </p>
             <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-3">
               {worker.portfolio.map((photo, index) => (
@@ -260,7 +300,7 @@ export default function WorkerProfilePage({
                   />
                   {index === worker.portfolio.length - 1 ? (
                     <span className="absolute inset-0 flex items-center justify-center bg-slate-950/45 text-lg font-bold text-white">
-                      + View all (12 photos)
+                      + {isUrdu ? "تمام تصاویر دیکھیں (12 تصاویر)" : "View all (12 photos)"}
                     </span>
                   ) : null}
                 </button>
@@ -270,15 +310,15 @@ export default function WorkerProfilePage({
 
           <section className="mt-10 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-              Customer Reviews
+              {copy?.customerReviews ?? "Customer Reviews"}
             </h2>
             <div className="mt-6 grid gap-8 lg:grid-cols-[320px_1fr]">
               <div className="rounded-3xl bg-[#f7faf9] p-5">
                 <p className="text-3xl font-bold text-slate-950">
-                  Overall: {worker.reviewSummary.overall} *
+                  {copy?.overall ?? "Overall"}: {worker.reviewSummary.overall} *
                 </p>
                 <p className="mt-1 text-sm font-semibold text-slate-500">
-                  ({worker.reviewSummary.total} reviews)
+                  ({worker.reviewSummary.total} {copy?.reviews ?? "reviews"})
                 </p>
                 <div className="mt-6 space-y-3">
                   {worker.reviewSummary.breakdown.map((item) => (
@@ -354,7 +394,7 @@ export default function WorkerProfilePage({
                 </div>
 
                 <button className="mt-6 rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-700">
-                  Load more reviews
+                {copy?.loadMore ?? "Load more reviews"}
                 </button>
               </div>
             </div>
@@ -362,19 +402,21 @@ export default function WorkerProfilePage({
 
           <section className="mt-10 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-              Service Area
+              {copy?.serviceArea ?? "Service Area"}
             </h2>
             <p className="mt-3 text-base font-semibold text-slate-600">
-              {worker.name.split(" ")[0]} covers these areas in {worker.mapCenter}
+              {isUrdu
+                ? `${worker.name.split(" ")[0]} ${worker.mapCenter} میں ان علاقوں کو کور کرتا ہے`
+                : `${worker.name.split(" ")[0]} covers these areas in ${worker.mapCenter}`}
             </p>
             <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-[#eaf4f1]">
               <div className="flex h-[280px] items-center justify-center bg-[radial-gradient(circle_at_center,rgba(1,73,62,0.14),transparent_38%),linear-gradient(135deg,#eaf4f1,#d6ece6)] text-center">
                 <div>
                   <p className="text-2xl font-bold text-[var(--primary)]">
-                    Coverage radius
+                    {copy?.coverage ?? "Coverage radius"}
                   </p>
                   <p className="mt-2 text-sm font-semibold text-slate-600">
-                    {worker.mapCenter} service map placeholder
+                    {isUrdu ? `${worker.mapCenter} سروس میپ پلیس ہولڈر` : `${worker.mapCenter} service map placeholder`}
                   </p>
                 </div>
               </div>
@@ -390,18 +432,19 @@ export default function WorkerProfilePage({
               ))}
             </div>
             <p className="mt-4 text-sm font-semibold text-slate-500">
-              Travel charges may apply outside primary area. Confirm at time of
-              booking.
+              {copy?.travel ?? "Travel charges may apply outside primary area. Confirm at time of booking."}
             </p>
           </section>
 
           <section className="mt-10">
             <div className="max-w-3xl">
               <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-                Other {worker.trade}s Near You
+                {copy?.other ?? "Other"} {worker.trade}s {copy?.nearby ?? "Near You"}
               </h2>
               <p className="mt-3 text-base font-semibold text-slate-600">
-                In case {worker.name.split(" ")[0]} is unavailable
+                {isUrdu
+                  ? `${worker.name.split(" ")[0]} دستیاب نہ ہو تو`
+                  : `In case ${worker.name.split(" ")[0]} is unavailable`}
               </p>
             </div>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -423,14 +466,14 @@ export default function WorkerProfilePage({
                       {similar.trade}
                     </p>
                     <p className="mt-3 text-sm font-bold text-slate-700">
-                      * {similar.rating} · {similar.jobs} jobs done
+                      * {similar.rating} · {similar.jobs} {copy?.jobsCompleted ?? "jobs done"}
                     </p>
                   </div>
                   <Link
                     href={`/${locale}/workers/${similar.slug}`}
                     className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-2xl bg-[var(--primary)] px-5 text-sm font-bold text-white"
                   >
-                    Book Now
+                    {copy?.bookNow ?? "Book Now"}
                   </Link>
                 </article>
               ))}
@@ -447,7 +490,7 @@ export default function WorkerProfilePage({
             </p>
           </div>
           <button className="min-h-11 rounded-2xl bg-[var(--primary)] px-6 text-sm font-bold text-white shadow-sm">
-            Book Now
+            {copy?.bookNow ?? "Book Now"}
           </button>
         </div>
       </div>
@@ -461,7 +504,7 @@ export default function WorkerProfilePage({
                 onClick={() => setActivePhoto(null)}
                 className="rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-white"
               >
-                Close
+                {copy?.close ?? "Close"}
               </button>
             </div>
             <div className="flex flex-1 items-center justify-center">

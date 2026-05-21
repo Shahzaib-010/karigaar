@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import { useState } from "react";
 import Footer from "@/src/components/sections/Footer";
 import type { ServiceProfile } from "@/src/data/services";
@@ -70,8 +71,55 @@ function serviceInitials(name: string) {
 }
 
 export default function ServiceDetailPage({ locale, service }: Props) {
+  const currentLocale = useLocale();
+  const isUrdu = locale === "ur" || currentLocale === "ur";
   const [sortBy, setSortBy] =
     useState<(typeof workerSorts)[number]>("Top Rated");
+
+  const copy = isUrdu
+    ? {
+        home: "ہوم",
+        services: "خدمات",
+        startingFrom: "ابتدائی قیمت",
+        finalPrice: "حتمی قیمت کام کی نوعیت پر منحصر ہے",
+        book: "بک کریں",
+        pricing: "قیمتیں کیسے طے ہوتی ہیں؟",
+        whatFix: `${service.name} کیا کیا ٹھیک کرتا ہے؟`,
+        everything: `یہ سب کچھ ہے جسے ہمارے ${service.name.toLowerCase()} ماہرین سنبھالنے کے لیے تربیت یافتہ اور تیار ہیں`,
+        customJob: "اپنا مسئلہ نہ ملا؟ کسٹم جاب پوسٹ کریں",
+        booking: `کیسے ${service.name} بک کریں`,
+        cost: "کتنا خرچ آئے گا؟",
+        priceNote: "تمام قیمتیں ابتدائی نرخ ہیں۔ حتمی قیمت کام شروع ہونے سے پہلے ورکر کے ساتھ طے کی جاتی ہے - کوئی چھپی ہوئی بات نہیں۔",
+        jobType: "کام کی قسم",
+        startingPrice: "ابتدائی قیمت",
+        duration: "مدت",
+        complexity: "مشکل کی سطح",
+        green: "سبز: آسان - سیدھا سادہ کام، ایک کاریگر",
+        yellow: "پیلا: درمیانہ - کچھ پرزے درکار ہو سکتے ہیں، شروع کرنے سے پہلے بات کریں",
+        red: "سرخ: مشکل - سائٹ معائنہ کے بعد قیمت دی جاتی ہے",
+        important: "اہم:",
+        availableNear: `${service.name}s آپ کے قریب دستیاب ہیں`,
+        showing: `نتائج دکھائے جا رہے ہیں ${service.city} کے لیے -`,
+        changeCity: "شہر تبدیل کریں",
+        sortBy: "ترتیب دیں:",
+        seeAll: `تمام ${service.name.toLowerCase()}s دیکھیں`,
+        before: `${service.name} آنے سے پہلے`,
+        prep: "تھوڑی سی تیاری کام کو تیز اور سستا بنا دیتی ہے",
+        during: "دورے کے دوران کیا ہوتا ہے",
+        protection: "ہر بکنگ پر آپ کی حفاظت",
+        reviews: `ہمارے ${service.name}s کے بارے میں صارفین کی رائے`,
+        overall: `مجموعی ریٹنگ: ${service.reviewsSummary.overall} / 5`,
+        basedOn: `${service.reviewsSummary.totalJobs} کاموں پر مبنی`,
+        allReviews: "تمام ریویوز دیکھیں",
+        other: "دوسری دستیاب خدمات",
+        platform: "ایک پلیٹ فارم آپ کی تمام گھریلو ضروریات کے لیے",
+        finalBook: `${service.name} ابھی بک کرنے کے لیے تیار ہیں؟`,
+        finalBody: "50,000+ صارفین میں شامل ہوں جنہوں نے کاریگر کے ذریعے اپنے گھر کے مسائل حل کیے",
+        freeToBook: "بکنگ مفت ہے",
+        noAdvance: "پیشگی ادائیگی نہیں",
+        cancel: "کبھی بھی منسوخ کریں",
+      }
+    : null;
 
   return (
     <>
@@ -79,10 +127,10 @@ export default function ServiceDetailPage({ locale, service }: Props) {
         <section className="mx-auto w-full max-w-7xl px-4 pb-16 pt-8 sm:px-6 lg:px-8 lg:pt-10">
           <div className="text-sm font-semibold text-slate-500">
             <Link href={`/${locale}`} className="hover:text-(--primary)">
-              Home
+              {copy?.home ?? "Home"}
             </Link>
             <span className="px-2">{">"}</span>
-            <span>Services</span>
+            <span>{copy?.services ?? "Services"}</span>
             <span className="px-2">{">"}</span>
             <span className="text-slate-700">{service.name}</span>
           </div>
@@ -125,23 +173,23 @@ export default function ServiceDetailPage({ locale, service }: Props) {
 
               <div className="rounded-3xl border border-[#d7ede5] bg-white p-6 shadow-sm sm:p-7">
                 <p className="text-sm font-bold uppercase tracking-[0.14em] text-(--primary)">
-                  Starting from
+                  {copy?.startingFrom ?? "Starting from"}
                 </p>
                 <p className="mt-2 text-4xl font-bold text-(--primary) sm:text-5xl">
                   {service.startingPrice}
                 </p>
                 <p className="mt-3 text-sm font-semibold text-slate-500">
-                  Final price depends on job type
+                  {copy?.finalPrice ?? "Final price depends on job type"}
                 </p>
                 <div className="mt-6 grid gap-3">
                   <button className="min-h-12 rounded-2xl bg-(--primary) px-6 text-base font-bold text-white shadow-sm transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_88%,black)]">
-                    Book a {service.name}
+                    {copy?.book ?? "Book a"} {service.name}
                   </button>
                   <a
                     href="#pricing"
                     className="text-sm font-bold text-(--primary) transition-opacity hover:opacity-75"
                   >
-                    How pricing works {"->"}
+                    {copy?.pricing ?? "How pricing works"} {"->"}
                   </a>
                 </div>
               </div>
@@ -151,11 +199,10 @@ export default function ServiceDetailPage({ locale, service }: Props) {
           <section className="mt-12">
             <div className="max-w-3xl">
               <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-                What Does a {service.name} Fix?
+                {copy?.whatFix ?? `What Does a ${service.name} Fix?`}
               </h2>
               <p className="mt-3 text-base font-semibold leading-7 text-slate-600 sm:text-lg">
-                Here is everything our {service.name.toLowerCase()}s are
-                trained and equipped to handle
+                {copy?.everything ?? `Here is everything our ${service.name.toLowerCase()}s are trained and equipped to handle`}
               </p>
             </div>
 
@@ -187,14 +234,14 @@ export default function ServiceDetailPage({ locale, service }: Props) {
                 href="#"
                 className="text-sm font-bold text-(--primary) transition-opacity hover:opacity-75 sm:text-base"
               >
-                Don&apos;t see your issue? Post a custom job {"->"}
+                {copy?.customJob ?? "Don&apos;t see your issue? Post a custom job"} {"->"}
               </a>
             </div>
           </section>
 
           <section className="mt-12 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-              How Booking a {service.name} Works
+              {copy?.booking ?? `How Booking a ${service.name} Works`}
             </h2>
             <div className="mt-8 grid gap-4 lg:grid-cols-4">
               {service.bookingSteps.map((step, index) => (
@@ -221,21 +268,20 @@ export default function ServiceDetailPage({ locale, service }: Props) {
             className="mt-12 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
           >
             <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-              How Much Does It Cost?
+              {copy?.cost ?? "How Much Does It Cost?"}
             </h2>
             <p className="mt-3 max-w-4xl text-base font-semibold leading-7 text-slate-600 sm:text-lg">
-              All prices are starting rates. Final price is agreed with the
-              worker before any work begins - no surprises.
+              {copy?.priceNote ?? "All prices are starting rates. Final price is agreed with the worker before any work begins - no surprises."}
             </p>
 
             <div className="mt-6 overflow-x-auto rounded-3xl border border-slate-200">
               <table className="w-full min-w-180 text-left">
                 <thead className="bg-[#f7faf9] text-sm font-bold text-slate-600">
                   <tr>
-                    <th className="px-4 py-4 sm:px-5">Job Type</th>
-                    <th className="px-4 py-4 sm:px-5">Starting Price</th>
-                    <th className="px-4 py-4 sm:px-5">Typical Duration</th>
-                    <th className="px-4 py-4 sm:px-5">Complexity</th>
+                    <th className="px-4 py-4 sm:px-5">{copy?.jobType ?? "Job Type"}</th>
+                    <th className="px-4 py-4 sm:px-5">{copy?.startingPrice ?? "Starting Price"}</th>
+                    <th className="px-4 py-4 sm:px-5">{copy?.duration ?? "Typical Duration"}</th>
+                    <th className="px-4 py-4 sm:px-5">{copy?.complexity ?? "Complexity"}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -266,19 +312,19 @@ export default function ServiceDetailPage({ locale, service }: Props) {
 
             <div className="mt-5 flex flex-wrap gap-3 text-xs font-bold sm:text-sm">
               <span className="rounded-full bg-emerald-50 px-3 py-2 text-emerald-700">
-                Green: Simple - straightforward fix, one worker
+                {copy?.green ?? "Green: Simple - straightforward fix, one worker"}
               </span>
               <span className="rounded-full bg-amber-50 px-3 py-2 text-amber-700">
-                Yellow: Medium - may need parts, discuss before starting
+                {copy?.yellow ?? "Yellow: Medium - may need parts, discuss before starting"}
               </span>
               <span className="rounded-full bg-rose-50 px-3 py-2 text-rose-700">
-                Red: Complex - quote given after site inspection
+                {copy?.red ?? "Red: Complex - quote given after site inspection"}
               </span>
             </div>
 
             <div className="mt-6 rounded-3xl border border-amber-200 bg-amber-50 p-5">
               <p className="text-sm font-bold text-amber-900">
-                Important: {service.note}
+                {copy?.important ?? "Important:"} {service.note}
               </p>
             </div>
           </section>
@@ -287,18 +333,18 @@ export default function ServiceDetailPage({ locale, service }: Props) {
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-                  {service.name}s Available Near You
+                  {copy?.availableNear ?? `${service.name}s Available Near You`}
                 </h2>
                 <p className="mt-3 text-base font-semibold text-slate-600 sm:text-lg">
-                  Showing results for {service.city} -{" "}
+                  {copy?.showing ?? `Showing results for ${service.city} -`} {" "}
                   <a href="#" className="text-(--primary)">
-                    Change city
+                    {copy?.changeCity ?? "Change city"}
                   </a>
                 </p>
               </div>
               <div className="flex flex-wrap gap-2.5">
                 <span className="self-center text-sm font-bold text-slate-500">
-                  Sort by:
+                  {copy?.sortBy ?? "Sort by:"}
                 </span>
                 {workerSorts.map((sort) => (
                   <button
@@ -374,7 +420,7 @@ export default function ServiceDetailPage({ locale, service }: Props) {
                 href="#"
                 className="text-sm font-bold text-(--primary) transition-opacity hover:opacity-75 sm:text-base"
               >
-                See all {service.workerCount} {service.name.toLowerCase()}s in{" "}
+                {copy?.seeAll ?? `See all ${service.workerCount} ${service.name.toLowerCase()}s in`} {" "}
                 {service.city} {"->"}
               </a>
             </div>
@@ -383,10 +429,10 @@ export default function ServiceDetailPage({ locale, service }: Props) {
           <section className="mt-12">
             <div className="max-w-3xl">
               <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-                Before the {service.name} Arrives
+                {copy?.before ?? `Before the ${service.name} Arrives`}
               </h2>
               <p className="mt-3 text-base font-semibold text-slate-600 sm:text-lg">
-                A little preparation makes the job faster and cheaper
+                {copy?.prep ?? "A little preparation makes the job faster and cheaper"}
               </p>
             </div>
 
@@ -409,7 +455,7 @@ export default function ServiceDetailPage({ locale, service }: Props) {
 
           <section className="mt-12 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-              What Happens During the Visit
+              {copy?.during ?? "What Happens During the Visit"}
             </h2>
             <div className="mt-8 space-y-4">
               {service.visitTimeline.map((step, index) => (
@@ -437,7 +483,7 @@ export default function ServiceDetailPage({ locale, service }: Props) {
           <section className="mt-12">
             <div className="max-w-3xl">
               <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-                Your Protection on Every Booking
+                {copy?.protection ?? "Your Protection on Every Booking"}
               </h2>
             </div>
             <div className="mt-8 grid gap-4 lg:grid-cols-3">
@@ -463,11 +509,11 @@ export default function ServiceDetailPage({ locale, service }: Props) {
           <section className="mt-12">
             <div className="max-w-3xl">
               <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-                What Customers Say About Our {service.name}s
+                {copy?.reviews ?? `What Customers Say About Our ${service.name}s`}
               </h2>
               <p className="mt-3 text-base font-semibold text-slate-600 sm:text-lg">
-                Overall: {service.reviewsSummary.overall} / 5 based on{" "}
-                {service.reviewsSummary.totalJobs}
+                {copy?.overall ?? `Overall: ${service.reviewsSummary.overall} / 5`} {" "}
+                {copy?.basedOn ?? `based on ${service.reviewsSummary.totalJobs}`}
               </p>
             </div>
             <div className="mt-8 grid gap-4 xl:grid-cols-3">
@@ -493,7 +539,7 @@ export default function ServiceDetailPage({ locale, service }: Props) {
                 href="#"
                 className="text-sm font-bold text-(--primary) transition-opacity hover:opacity-75 sm:text-base"
               >
-                View all {service.name.toLowerCase()} reviews {"->"}
+                {copy?.allReviews ?? `View all ${service.name.toLowerCase()} reviews`} {"->"}
               </a>
             </div>
           </section>
@@ -501,10 +547,10 @@ export default function ServiceDetailPage({ locale, service }: Props) {
           <section className="mt-12">
             <div className="max-w-3xl">
               <h2 className="font-karigaar text-3xl font-bold sm:text-4xl">
-                Other Services Available
+                {copy?.other ?? "Other Services Available"}
               </h2>
               <p className="mt-3 text-base font-semibold text-slate-600 sm:text-lg">
-                One platform for all your home needs
+                {copy?.platform ?? "One platform for all your home needs"}
               </p>
             </div>
             <div className="mt-8 flex gap-4 overflow-x-auto pb-2">
@@ -556,23 +602,23 @@ export default function ServiceDetailPage({ locale, service }: Props) {
           <section className="mt-12 rounded-4xl bg-(--primary) px-6 py-8 text-white shadow-[0_24px_70px_rgba(1,73,62,0.18)] sm:px-8 sm:py-10 lg:px-10">
             <div className="mx-auto max-w-3xl text-center">
               <h2 className="font-karigaar text-4xl font-bold sm:text-5xl">
-                {service.finalCtaTitle}
+                {isUrdu ? copy?.finalBook ?? service.finalCtaTitle : service.finalCtaTitle}
               </h2>
               <p className="mt-4 text-base font-semibold leading-7 text-white/75 sm:text-lg">
-                {service.finalCtaBody}
+                {isUrdu ? copy?.finalBody ?? service.finalCtaBody : service.finalCtaBody}
               </p>
               <div className="mt-7 grid gap-3 sm:flex sm:justify-center">
                 <button className="min-h-12 rounded-2xl bg-white px-6 text-base font-bold text-(--primary)">
-                  Book a {service.name} Now
+                  {isUrdu ? "ابھی بک کریں" : `Book a ${service.name} Now`}
                 </button>
                 <button className="min-h-12 rounded-2xl border border-white/30 px-6 text-base font-bold text-white">
-                  Post a Custom Job
+                  {isUrdu ? "حسبِ ضرورت کام پوسٹ کریں" : "Post a Custom Job"}
                 </button>
               </div>
               <div className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm font-bold text-white/70">
-                <span>&#10003; Free to book</span>
-                <span>&#10003; No advance payment</span>
-                <span>&#10003; Cancel anytime</span>
+                <span>&#10003; {copy?.freeToBook ?? "Free to book"}</span>
+                <span>&#10003; {copy?.noAdvance ?? "No advance payment"}</span>
+                <span>&#10003; {copy?.cancel ?? "Cancel anytime"}</span>
               </div>
             </div>
           </section>

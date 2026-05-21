@@ -41,11 +41,17 @@ export default async function LocaleLayout({
   }
 
   const messages = messagesByLocale[locale];
+  const isUrdu = locale === "ur";
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <Navbar />
-      {children}
-    </NextIntlClientProvider>
+    <div
+      dir={isUrdu ? "rtl" : "ltr"}
+      className={isUrdu ? "urdu-font min-h-full flex flex-col" : "min-h-full flex flex-col"}
+    >
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <Navbar />
+        {children}
+      </NextIntlClientProvider>
+    </div>
   );
 }

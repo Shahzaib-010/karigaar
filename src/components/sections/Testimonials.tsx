@@ -1,3 +1,7 @@
+"use client";
+
+import { useLocale } from "next-intl";
+
 const reviews = [
   {
     rating: "★★★★★",
@@ -23,15 +27,25 @@ const reviews = [
 ];
 
 export default function Testimonials() {
+  const locale = useLocale();
+  const isUrdu = locale === "ur";
+
+  const copy = isUrdu
+    ? {
+        title: "لوگ کیا کہہ رہے ہیں",
+        subtitle: "حقیقی صارفین، حقیقی ریویوز - بغیر اسکرپٹ اور ایماندار",
+      }
+    : null;
+
   return (
     <section className="bg-[#f7faf9] py-16 font-sans text-slate-950 sm:py-20 lg:py-24">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="font-karigaar text-4xl font-bold leading-tight text-slate-950 sm:text-5xl">
-            What People Are Saying
+            {copy?.title ?? "What People Are Saying"}
           </h2>
           <p className="mt-4 text-base font-semibold leading-7 text-slate-600 sm:text-lg">
-            Real customers, real reviews - unscripted and honest
+            {copy?.subtitle ?? "Real customers, real reviews - unscripted and honest"}
           </p>
         </div>
 
@@ -41,7 +55,7 @@ export default function Testimonials() {
               key={review.author}
               className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm ring-1 ring-black/5 transition-all hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]"
             >
-              <p className="text-lg font-bold tracking-[0.12em] text-[var(--primary)]">
+              <p className="text-lg font-bold tracking-[0.12em] text-primary">
                 {review.rating}
               </p>
               <blockquote className="mt-5 text-base font-semibold leading-7 text-slate-700">
@@ -60,7 +74,7 @@ export default function Testimonials() {
         </div>
 
         <div className="mt-8 flex items-center justify-center gap-2.5">
-          <span className="h-2.5 w-8 rounded-full bg-[var(--primary)]" />
+          <span className="h-2.5 w-8 rounded-full bg-primary" />
           <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
           <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
         </div>

@@ -6,16 +6,27 @@ import { serviceCardLinks } from "@/src/data/services";
 
 export default function BrowseByTrade() {
   const locale = useLocale();
+  const isUrdu = locale === "ur";
+
+  const translated = isUrdu
+    ? {
+        title: "زمرے کے حساب سے تلاش کریں",
+        subtitle: "ہر گھریلو کام کی سہولت یہاں موجود ہے - صحیح کام کے لیے صحیح ماہر تلاش کریں",
+        available: "دستیاب",
+        comingSoon: "جلد آ رہا ہے",
+        viewAll: "تمام زمروں کو دیکھیں",
+      }
+    : null;
 
   return (
     <section className="bg-white py-16 font-sans text-slate-950 sm:py-20 lg:py-24">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="font-karigaar text-4xl font-bold leading-tight text-slate-950 sm:text-5xl">
-            Browse by Trade
+            {translated?.title ?? "Browse by Trade"}
           </h2>
           <p className="mt-4 text-base font-semibold leading-7 text-slate-600 sm:text-lg">
-            Every home job covered - find the right expert for the right work
+            {translated?.subtitle ?? "Every home job covered - find the right expert for the right work"}
           </p>
         </div>
 
@@ -27,7 +38,7 @@ export default function BrowseByTrade() {
                   <span
                     className={`flex h-12 w-12 items-center justify-center rounded-2xl text-2xl ${
                       category.available
-                        ? "bg-[var(--primary)]"
+                        ? "bg-primary"
                         : "bg-slate-100 grayscale"
                     }`}
                     aria-hidden="true"
@@ -36,12 +47,12 @@ export default function BrowseByTrade() {
                   </span>
 
                   {category.available ? (
-                    <span className="rounded-full bg-[var(--primary)] px-3 py-1 text-xs font-bold text-white">
-                      Available
+                    <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">
+                      {translated?.available ?? "Available"}
                     </span>
                   ) : (
                     <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-500">
-                      Coming soon
+                      {translated?.comingSoon ?? "Coming soon"}
                     </span>
                   )}
                 </div>
@@ -50,7 +61,7 @@ export default function BrowseByTrade() {
                   <h3
                     className={`text-2xl font-bold ${
                       category.available
-                        ? "text-[var(--primary)]"
+                        ? "text-primary"
                         : "text-slate-900"
                     }`}
                   >
@@ -65,7 +76,7 @@ export default function BrowseByTrade() {
 
             const className = `group relative min-h-52 rounded-2xl border p-5 transition-all ${
               category.available
-                ? "border-[var(--primary)] bg-[#f7faf9] shadow-[0_18px_45px_rgba(1,73,62,0.12)]"
+                ? "border-primary bg-[#f7faf9] shadow-[0_18px_45px_rgba(1,73,62,0.12)]"
                 : "border-slate-200 bg-white hover:border-slate-300"
             }`;
 
@@ -92,9 +103,9 @@ export default function BrowseByTrade() {
         <div className="mt-9 text-center">
           <a
             href="#"
-            className="inline-flex items-center text-base font-bold text-[var(--primary)] transition-opacity hover:opacity-75"
+            className="inline-flex items-center text-base font-bold text-primary transition-opacity hover:opacity-75"
           >
-            View all categories {"->"}
+            {translated?.viewAll ?? "View all categories"} {"->"}
           </a>
         </div>
       </div>

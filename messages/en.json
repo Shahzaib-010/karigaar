@@ -6,5 +6,167 @@
     "services": "Services",
     "language": "Language",
     "welcome": "Welcome"
+  },
+  "nav": {
+    "home": "Home"
+  },
+  "navbar": {
+    "brand": "Karigaar",
+    "homeAria": "Karigaar home",
+    "language": "Language selector",
+    "login": "Login",
+    "signup": "Sign Up",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "links": {
+      "browseWorkers": "Browse Workers",
+      "postJob": "Post a Job",
+      "howItWorks": "How It Works",
+      "cities": "Cities"
+    },
+    "menu": {
+      "profile": "My Profile",
+      "bookings": "My Bookings",
+      "savedWorkers": "Saved Workers",
+      "settings": "Settings",
+      "logout": "Logout"
+    }
+  },
+  "signup": {
+    "brand": "Karigaar",
+    "tagline": "Pakistan's home services marketplace",
+    "form": {
+      "title": "Create your account",
+      "subtitle": "Book trusted home service professionals across Pakistan.",
+      "submit": "Create Account"
+    },
+    "fields": {
+      "name": "Full Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "city": "City",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
+    },
+    "placeholders": {
+      "name": "Enter your full name",
+      "email": "you@example.com",
+      "phone": "3001234567",
+      "password": "Create a password",
+      "confirmPassword": "Confirm your password"
+    },
+    "hints": {
+      "email": "OTP will be sent here"
+    },
+    "password": {
+      "show": "Show password",
+      "hide": "Hide password"
+    },
+    "cities": {
+      "lahore": "Lahore",
+      "karachi": "Karachi",
+      "islamabad": "Islamabad",
+      "rawalpindi": "Rawalpindi",
+      "faisalabad": "Faisalabad",
+      "multan": "Multan",
+      "gujranwala": "Gujranwala",
+      "peshawar": "Peshawar",
+      "quetta": "Quetta",
+      "other": "Other"
+    },
+    "terms": {
+      "prefix": "I agree to the",
+      "terms": "Terms",
+      "and": "and",
+      "privacy": "Privacy Policy"
+    },
+    "errors": {
+      "name": "Full name must be at least 3 characters.",
+      "email": "Enter a valid email address.",
+      "phone": "Enter 10 digits starting with 3.",
+      "city": "Select your city.",
+      "password": "Password must be at least 8 characters.",
+      "confirmPassword": "Passwords must match.",
+      "terms": "Please accept the terms and privacy policy.",
+      "submit": "We could not create your account. Please try again."
+    },
+    "otp": {
+      "title": "Check Your Email",
+      "subtitle": "We sent a 6-digit code to",
+      "back": "Back to signup",
+      "label": "Verification code",
+      "verify": "Verify Code",
+      "resend": "Resend Code",
+      "expired": "Code expired.",
+      "resendSuccess": "✓ New code sent",
+      "incorrect": "Incorrect code. Try again."
+    },
+    "verifying": {
+      "title": "Verifying",
+      "subtitle": "Hang tight while we confirm your code.",
+      "text": "Verifying your code..."
+    },
+    "success": {
+      "title": "Account verified",
+      "subtitle": "Your Karigaar account is ready.",
+      "welcome": "Welcome to Karigaar, {name}!",
+      "home": "Go to Homepage",
+      "findWorker": "Find a Worker"
+    }
   }
+  ,
+  "workers": {
+    "browse": "Browse Workers",
+    "title": "Browse Skilled Workers",
+    "subtitle": "Verified karigaars across 18 cities — find the right expert for your job",
+    "showing": "Showing {count} workers",
+    "found": "workers found"
+  },
+  "categories": {
+    "all": "All",
+    "plumber": "Plumber",
+    "electrician": "Electrician",
+    "carpenter": "Carpenter",
+    "painter": "Painter",
+    "ac_repair": "AC Repair",
+    "mason": "Mason",
+    "welder": "Welder",
+    "cleaning": "Cleaning",
+    "geyser": "Geyser",
+    "tile_work": "Tile Work",
+    "gate_&_grill": "Gate & Grill"
+  },
+  "sort": {
+    "top_rated": "Top Rated",
+    "most_jobs": "Most Jobs",
+    "nearest": "Nearest",
+    "price_asc": "Price: Low to High",
+    "price_desc": "Price: High to Low"
+  },
+  "filters": {
+    "available": "Available Now"
+  },
+  "status": {
+    "available": "Available now",
+    "offline": "Offline"
+  },
+  "buttons": {
+    "view": "View Profile",
+    "book": "Book Now"
+  },
+  "pagination": {
+    "prev": "Previous",
+    "next": "Next",
+    "page_of": "Page {page} of {totalPages}"
+  },
+  "empty": {
+    "title": "No workers found",
+    "subtitle": "Try changing your filters or selecting a different city.",
+    "clear": "Clear all filters"
+  },
+  "errors": {
+    "generic": "Something went wrong.",
+    "try_again": "Please try again."
+  },
+  "retry": "Retry"
 }

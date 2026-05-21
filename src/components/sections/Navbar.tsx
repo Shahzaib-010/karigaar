@@ -1,42 +1,57 @@
 "use client";
 
+import {
+  IconChevronDown,
+  IconClipboardList,
+  IconHeart,
+  IconLogout,
+  IconMenu2,
+  IconSettings,
+  IconUser,
+  IconX,
+} from "@tabler/icons-react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
-import { useEffect, useRef, useState } from "react";
-
-type NavbarUser = {
-  name: string;
-  role: string;
-  city: string;
-  email: string;
-  initials?: string;
-};
-
-type NavbarProps = {
-  currentUser?: NavbarUser | null;
-};
+import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
-  { label: "Browse Workers", href: "browse-workers" },
-  { label: "Post a Job", href: "post-a-job" },
-  { label: "How It Works", href: "how-it-works" },
-  { label: "Cities", href: "cities" },
-];
+  { label: "browseWorkers", href: "workers" },
+  { label: "postJob", href: "post-a-job" },
+  { label: "howItWorks", href: "how-it-works" },
+  { label: "cities", href: "cities" },
+] as const;
 
-const fallbackUser: NavbarUser = {
-  name: "Ayesha Khan",
-  role: "Homeowner",
-  city: "Lahore",
-  email: "ayesha@example.com",
-  initials: "AK",
-};
+const menuItems = [
+  { label: "profile", icon: IconUser, href: "profile" },
+  { label: "bookings", icon: IconClipboardList, href: "bookings" },
+  { label: "savedWorkers", icon: IconHeart, href: "saved-workers" },
+  { label: "settings", icon: IconSettings, href: "settings" },
+] as const;
 
-export default function Navbar({ currentUser = null }: NavbarProps) {
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
+export default function Navbar() {
   const locale = useLocale();
+  const t = useTranslations("navbar");
+  const router = useRouter();
+  const { isAuthenticated, user, logout } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
-  const user = currentUser;
+  const isRtl = locale === "ur";
+  const firstName = user?.name.split(" ")[0] ?? "";
+  const initials = useMemo(() => getInitials(user?.name ?? ""), [user?.name]);
+  const withLocale = (path: string) => `/${locale}/${path}`;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -59,105 +74,117 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
     };
   }, [isMenuOpen]);
 
-  const withLocale = (path: string) => `/${locale}/${path}`;
+  function handleLogout() {
+    logout();
+    setIsProfileOpen(false);
+    setIsMenuOpen(false);
+    router.push("/");
+  }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 font-sans shadow-sm backdrop-blur">
+    <header
+      dir={isRtl ? "rtl" : "ltr"}
+      className="sticky top-0 z-50 border-b border-border bg-card font-sans"
+    >
       <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center gap-3 px-4 sm:min-h-20 sm:px-6 lg:gap-4 lg:px-8">
         <Link
           href={`/${locale}`}
-          className="shrink-0 text-xl font-bold text-[var(--primary)] sm:text-2xl"
-          aria-label="Karigaar home"
+          className={`shrink-0 font-karigaar text-xl font-bold text-primary sm:text-2xl ${
+            isRtl ? "ur-brand" : ""
+          }`}
+          aria-label={t("homeAria")}
         >
-          Karigaar
+          {t("brand")}
         </Link>
 
-        <nav className="hidden flex-1 items-center justify-center gap-6 text-sm font-semibold text-slate-700 md:flex lg:gap-8">
+        <nav className="hidden flex-1 items-center justify-center gap-6 text-sm font-semibold text-muted md:flex lg:gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={withLocale(link.href)}
-              className="transition-colors hover:text-[var(--primary)]"
+              className={`transition-colors hover:text-primary ${
+                isRtl ? "ur-nav-link" : ""
+              }`}
             >
-              {link.label}
+              {t(`links.${link.label}`)}
             </Link>
           ))}
         </nav>
 
-        <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="ms-auto flex shrink-0 items-center gap-2 sm:gap-3">
           <div
-            className="flex h-9 items-center rounded-full border border-slate-200 bg-slate-50 p-1 text-xs font-bold text-slate-600 sm:h-10 sm:text-sm"
-            aria-label="Language selector"
+            className="flex h-10 items-center rounded-xl border border-border bg-background p-1 text-xs font-bold text-muted sm:text-sm"
+            aria-label={t("language")}
           >
             <Link
               href="/en"
-              className={`rounded-full px-2.5 py-1.5 transition-colors sm:px-3 ${
+              className={`rounded-lg px-2.5 py-1.5 transition-colors sm:px-3 ${
                 locale === "en"
-                  ? "bg-[var(--primary)] text-white"
-                  : "hover:text-[var(--primary)]"
+                  ? "bg-primary text-white"
+                  : "hover:text-primary"
               }`}
             >
               EN
             </Link>
-            <span className="px-0.5 text-slate-300 sm:px-1">/</span>
+            <span className="px-0.5 text-border sm:px-1">/</span>
             <Link
               href="/ur"
-              className={`rounded-full px-2.5 py-1.5 transition-colors sm:px-3 ${
+              className={`rounded-lg px-2.5 py-1.5 transition-colors sm:px-3 ${
                 locale === "ur"
-                  ? "bg-[var(--primary)] text-white"
-                  : "hover:text-[var(--primary)]"
+                  ? "bg-primary text-white"
+                  : "hover:text-primary"
               }`}
             >
               اردو
             </Link>
           </div>
 
-          {user ? (
+          {isAuthenticated && user ? (
             <div ref={profileRef} className="relative hidden md:block">
               <button
                 type="button"
                 aria-haspopup="menu"
                 aria-expanded={isProfileOpen}
                 onClick={() => setIsProfileOpen((value) => !value)}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--primary)] text-sm font-bold text-white shadow-sm transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2"
+                className="flex h-11 items-center gap-2 rounded-xl border border-border bg-card pe-3 ps-1.5 text-sm font-bold text-foreground transition hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
               >
-                {user.initials ?? user.name.slice(0, 2).toUpperCase()}
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+                  {initials}
+                </span>
+                <span>{firstName}</span>
+                <IconChevronDown size={18} stroke={1.8} />
               </button>
 
               {isProfileOpen ? (
                 <div
                   role="menu"
-                  className="absolute right-0 mt-3 w-72 rounded-lg border border-slate-200 bg-white p-4 text-left shadow-xl"
+                  className="absolute end-0 z-50 mt-3 w-64 rounded-xl border border-border bg-card p-2 text-start"
                 >
-                  <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--primary)] text-base font-bold text-white">
-                      {user.initials ?? user.name.slice(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-base font-bold text-slate-950">
-                        {user.name}
-                      </p>
-                      <p className="text-sm font-semibold text-slate-500">
-                        {user.role}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-3 pt-4 text-sm">
-                    <p className="flex justify-between gap-4">
-                      <span className="font-semibold text-slate-500">City</span>
-                      <span className="font-bold text-slate-900">
-                        {user.city}
-                      </span>
-                    </p>
-                    <p className="flex justify-between gap-4">
-                      <span className="font-semibold text-slate-500">
-                        Email
-                      </span>
-                      <span className="font-bold text-slate-900">
-                        {user.email}
-                      </span>
-                    </p>
-                  </div>
+                  {menuItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={withLocale(item.href)}
+                        role="menuitem"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-foreground transition hover:bg-background"
+                      >
+                        <Icon size={19} stroke={1.8} />
+                        {t(`menu.${item.label}`)}
+                      </Link>
+                    );
+                  })}
+                  <div className="my-2 border-t border-border" />
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start text-sm font-bold text-error transition hover:bg-background"
+                  >
+                    <IconLogout size={19} stroke={1.8} />
+                    {t("menu.logout")}
+                  </button>
                 </div>
               ) : null}
             </div>
@@ -165,33 +192,33 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
             <div className="hidden items-center gap-2 md:flex">
               <Link
                 href={withLocale("login")}
-                className="rounded-full px-4 py-2 text-sm font-bold text-slate-700 transition-colors hover:text-[var(--primary)]"
+                className="rounded-lg border border-primary bg-card px-4 py-2.5 text-sm font-bold text-primary transition-colors hover:bg-primary/5"
               >
-                Login
+                {t("login")}
               </Link>
               <Link
-                href={withLocale("sign-up")}
-                className="rounded-full bg-[var(--primary)] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_88%,black)]"
+                href={withLocale("signup")}
+                className="rounded-lg border border-primary bg-primary px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-dark"
               >
-                Sign Up
+                {t("signup")}
               </Link>
             </div>
           )}
 
           <button
             type="button"
-            aria-label="Open menu"
+            aria-label={t("openMenu")}
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen(true)}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-2xl font-bold leading-none text-slate-900 shadow-sm md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-card text-foreground md:hidden"
           >
-            ≡
+            <IconMenu2 size={22} stroke={1.8} />
           </button>
         </div>
       </div>
 
       <div
-        className={`fixed inset-0 z-[60] flex min-h-dvh flex-col bg-[#f7faf9] px-5 py-5 transition-transform duration-300 ease-out md:hidden ${
+        className={`fixed inset-0 z-[60] flex min-h-dvh flex-col bg-background px-5 py-5 transition-transform duration-300 ease-out md:hidden ${
           isMenuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
         aria-hidden={!isMenuOpen}
@@ -200,19 +227,21 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
           <Link
             href={`/${locale}`}
             onClick={() => setIsMenuOpen(false)}
-            className="text-2xl font-bold text-[var(--primary)]"
-            aria-label="Karigaar home"
+            className={`font-karigaar text-2xl font-bold text-primary ${
+              isRtl ? "ur-brand" : ""
+            }`}
+            aria-label={t("homeAria")}
           >
-            Karigaar
+            {t("brand")}
           </Link>
 
           <button
             type="button"
-            aria-label="Close menu"
+            aria-label={t("closeMenu")}
             onClick={() => setIsMenuOpen(false)}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-950 text-3xl leading-none text-white"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-border bg-card text-foreground"
           >
-            ×
+            <IconX size={24} stroke={1.8} />
           </button>
         </div>
 
@@ -222,46 +251,56 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
               key={link.href}
               href={withLocale(link.href)}
               onClick={() => setIsMenuOpen(false)}
-              className="text-4xl font-bold leading-none text-slate-950 transition-colors hover:text-[var(--primary)]"
+              className={`text-4xl font-bold leading-none text-foreground transition-colors hover:text-primary ${
+                isRtl ? "ur-nav-link" : ""
+              }`}
             >
-              {link.label}
+              {t(`links.${link.label}`)}
             </Link>
           ))}
         </nav>
 
         <div className="pb-4">
-          {!user ? (
-            <div className="grid gap-3">
-              <Link
-                href={withLocale("login")}
-                onClick={() => setIsMenuOpen(false)}
-                className="rounded-full border border-slate-200 bg-white px-5 py-4 text-center text-base font-bold text-slate-800"
-              >
-                Login
-              </Link>
-              <Link
-                href={withLocale("sign-up")}
-                onClick={() => setIsMenuOpen(false)}
-                className="rounded-full bg-[var(--primary)] px-5 py-4 text-center text-base font-bold text-white shadow-sm"
-              >
-                Sign Up
-              </Link>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--primary)] text-base font-bold text-white">
-                  {user.initials ?? user.name.slice(0, 2).toUpperCase()}
+          {isAuthenticated && user ? (
+            <div className="rounded-2xl border border-border bg-card p-4">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-base font-bold text-white">
+                  {initials}
                 </div>
                 <div>
-                  <p className="text-base font-bold text-slate-950">
+                  <p className="text-base font-bold text-foreground">
                     {user.name}
                   </p>
-                  <p className="text-sm font-semibold text-slate-500">
+                  <p className="text-sm font-semibold text-muted">
                     {user.role}
                   </p>
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-error px-5 py-3 text-sm font-bold text-error"
+              >
+                <IconLogout size={19} stroke={1.8} />
+                {t("menu.logout")}
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              <Link
+                href={withLocale("login")}
+                onClick={() => setIsMenuOpen(false)}
+                className="rounded-lg border border-primary bg-card px-5 py-4 text-center text-base font-bold text-primary"
+              >
+                {t("login")}
+              </Link>
+              <Link
+                href={withLocale("signup")}
+                onClick={() => setIsMenuOpen(false)}
+                className="rounded-lg border border-primary bg-primary px-5 py-4 text-center text-base font-bold text-white"
+              >
+                {t("signup")}
+              </Link>
             </div>
           )}
         </div>
@@ -269,5 +308,3 @@ export default function Navbar({ currentUser = null }: NavbarProps) {
     </header>
   );
 }
-
-export { fallbackUser };

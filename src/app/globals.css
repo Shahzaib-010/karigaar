@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 @font-face {
+  font-family: "Jameel Noori Nastaleeq";
+  src: url("/fonts/Jameel Noori Nastaleeq Kasheeda.ttf") format("truetype");
+  font-weight: 500 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Karigaar Sans";
   src: url("/fonts/karigaarSans-semibold.ttf") format("truetype");
   font-weight: 600;
@@ -13,9 +21,16 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --primary: #01493E;
+  --background: #F7F7F5;
+  --foreground: #1A1A1A;
+  --primary: #1D9E75;
+  --primary-dark: #0F6E56;
+  --border: #E8E8E4;
+  --muted: #6B6B6B;
+  --card: #FFFFFF;
+  --error: #EF4444;
+  --success: #22C55E;
+  --warning: #F59E0B;
 }
 
 /* #01493E  #097969- */
@@ -23,22 +38,136 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Inter", Arial, sans-serif;
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-muted: var(--muted);
+  --color-error: var(--error);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --font-sans: var(--font-open-sans), Arial, sans-serif;
   --font-karigaar: "Karigaar Sans", "Inter", Arial, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Inter", Arial, sans-serif;
+  font-family: var(--font-open-sans), Arial, sans-serif;
 }
 
+.urdu-font,
+.urdu-font * {
+  font-family: "Jameel Noori Nastaleeq", var(--font-open-sans), serif !important;
+}
 
+.urdu-font {
+  font-weight: 600;
+  font-synthesis: weight;
+}
 
+.urdu-font .font-medium,
+.urdu-font .font-semibold {
+  font-weight: 700 !important;
+}
+
+.urdu-font p,
+.urdu-font a,
+.urdu-font button,
+.urdu-font label,
+.urdu-font input,
+.urdu-font select,
+.urdu-font textarea {
+  font-weight: 700 !important;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.urdu-font p,
+.urdu-font .text-muted,
+.urdu-font .text-slate-500,
+.urdu-font .text-slate-600,
+.urdu-font .text-slate-700 {
+  color: #3f3f3f !important;
+}
+
+.urdu-font .font-karigaar,
+.urdu-font h1,
+.urdu-font h2,
+.urdu-font h3,
+.urdu-font nav a {
+  font-weight: 800 !important;
+  text-shadow: 0 0 0.35px currentColor;
+}
+
+.ur-brand {
+  color: var(--primary);
+  font-weight: 900 !important;
+  text-shadow: 0 0 0.45px currentColor;
+}
+
+.ur-nav-link {
+  color: #2f2f2f !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 0.35px currentColor;
+}
+
+.ur-readable {
+  color: #3f3f3f !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 0.25px currentColor;
+}
+
+[dir="rtl"] {
+  direction: rtl;
+}
+
+.auth-step-enter {
+  animation: auth-step-enter 250ms ease-out both;
+}
+
+.otp-shake {
+  animation: otp-shake 400ms ease-in-out both;
+}
+
+.success-check {
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+  animation: success-check 600ms ease forwards;
+}
+
+@keyframes auth-step-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes otp-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-8px);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  60% {
+    transform: translateX(-8px);
+  }
+  80% {
+    transform: translateX(8px);
+  }
+}
+
+@keyframes success-check {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

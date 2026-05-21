@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
@@ -10,20 +8,31 @@ import { featuredWorkers } from "@/src/data/workers";
 
 export default function FeaturedWorkers() {
   const locale = useLocale();
+  const isUrdu = locale === "ur";
+
+  const copy = isUrdu
+    ? {
+        eyebrow: "آپ کے قریب ٹاپ کاریگر",
+        title: "تصدیق شدہ، ریٹیڈ، اور تیار",
+        subtitle: "نیچے موجود ہر کاریگر کو حقیقی صارفین نے ریٹ کیا ہے - نہ جعلی ریویوز، نہ شارٹ کٹس",
+        verified: "تصدیق شدہ",
+        bookNow: "ابھی بک کریں",
+        seeAll: "تمام کاریگر دیکھیں",
+      }
+    : null;
 
   return (
     <section className="bg-[#f7faf9] py-16 font-sans text-slate-950 sm:py-20 lg:py-24">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--primary)] sm:text-sm">
-            Top Workers Near You
+            {copy?.eyebrow ?? "Top Workers Near You"}
           </p>
           <h2 className="font-karigaar mt-3 text-4xl font-bold leading-tight text-slate-950 sm:text-5xl">
-            Verified, Rated, and Ready
+            {copy?.title ?? "Verified, Rated, and Ready"}
           </h2>
           <p className="mt-4 text-base font-semibold leading-7 text-slate-600 sm:text-lg">
-            Every worker below has been rated by real customers - no fake
-            reviews, no shortcuts
+            {copy?.subtitle ?? "Every worker below has been rated by real customers - no fake reviews, no shortcuts"}
           </p>
         </div>
 
@@ -51,7 +60,7 @@ export default function FeaturedWorkers() {
                 </div>
 
                 <span className="rounded-full bg-[var(--primary)] px-3 py-1 text-xs font-bold text-white">
-                  Verified
+                  {copy?.verified ?? "Verified"}
                 </span>
               </div>
 
@@ -68,19 +77,19 @@ export default function FeaturedWorkers() {
                 href={`/${locale}/workers/${worker.slug}`}
                 className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-[var(--primary)] px-5 text-base font-bold text-white shadow-sm transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_88%,black)]"
               >
-                Book Now
+                {copy?.bookNow ?? "Book Now"}
               </Link>
             </article>
           ))}
         </div>
 
         <div className="mt-9 text-center">
-          <a
-            href="#"
+          <Link
+            href={`/${locale}/workers`}
             className="inline-flex items-center text-base font-bold text-[var(--primary)] transition-opacity hover:opacity-75"
           >
-            See all workers {"->"}
-          </a>
+            {copy?.seeAll ?? "See all workers"} {"->"}
+          </Link>
         </div>
       </div>
     </section>
