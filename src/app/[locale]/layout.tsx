@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
-import Navbar from "@/src/components/sections/Navbar";
 import enMessages from "../../../messages/en.json";
 import urMessages from "../../../messages/ur.json";
 
@@ -49,7 +48,6 @@ export default async function LocaleLayout({
       className={isUrdu ? "urdu-font min-h-full flex flex-col" : "min-h-full flex flex-col"}
     >
       <NextIntlClientProvider locale={locale} messages={messages}>
-        <Navbar />
         {children}
       </NextIntlClientProvider>
     </div>

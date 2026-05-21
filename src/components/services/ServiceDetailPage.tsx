@@ -624,7 +624,6 @@ export default function ServiceDetailPage({ locale, service }: Props) {
           </section>
         </section>
       </main>
-      <Footer />
     </>
   );
 }

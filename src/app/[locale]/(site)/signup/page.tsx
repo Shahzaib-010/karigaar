@@ -426,11 +426,17 @@ export default function SignupPage() {
                 />
                 <span>
                   {t("terms.prefix")}{" "}
-                  <Link href={`/${locale}/terms`} className="font-bold text-primary">
+                  <Link
+                    href={`/${locale}/terms`}
+                    className="font-bold text-primary"
+                  >
                     {t("terms.terms")}
                   </Link>{" "}
                   {t("terms.and")}{" "}
-                  <Link href={`/${locale}/privacy`} className="font-bold text-primary">
+                  <Link
+                    href={`/${locale}/privacy`}
+                    className="font-bold text-primary"
+                  >
                     {t("terms.privacy")}
                   </Link>
                 </span>

@@ -3,7 +3,11 @@ import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import enMessages from "../../messages/en.json";
 import { AuthProvider } from "@/context/AuthContext";
-import { Open_Sans } from "next/font/google";
+import { Open_Sans, Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const openSans = Open_Sans({
   subsets: ["latin"],
@@ -22,13 +26,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full antialiased ${openSans.variable}`}>
+    <html lang="en" className={cn("h-full", "antialiased", openSans.variable, "font-sans", geist.variable)}>
       <body className="min-h-full">
-        <AuthProvider>
-          <NextIntlClientProvider locale="en" messages={enMessages}>
-            {children}
-          </NextIntlClientProvider>
-        </AuthProvider>
+        <TooltipProvider>
+          <AuthProvider>
+            <NextIntlClientProvider locale="en" messages={enMessages}>
+              {children}
+            </NextIntlClientProvider>
+          </AuthProvider>
+        </TooltipProvider>
       </body>
     </html>
   );
