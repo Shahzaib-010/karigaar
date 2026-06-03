@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Open_Sans, Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Analytics } from "@vercel/analytics/next";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -35,6 +36,7 @@ export default function RootLayout({
             </NextIntlClientProvider>
           </AuthProvider>
         </TooltipProvider>
+        <Analytics />
       </body>
     </html>
   );
