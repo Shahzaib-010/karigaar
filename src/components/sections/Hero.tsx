@@ -76,7 +76,7 @@ export default function Hero() {
                 />
                 <input
                   type="search"
-                  placeholder={copy?.placeholder ?? "What work do you need? e.g. plumber, electrician..."}
+                  placeholder={copy?.placeholder ?? "What work do you need? "}
                   className="w-full bg-transparent text-base font-semibold text-slate-900 outline-none placeholder:text-slate-400"
                 />
               </label>
@@ -86,7 +86,7 @@ export default function Hero() {
                 className="inline-flex min-h-14 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-700 transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)] md:justify-start"
               >
                 <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-                {copy?.city ?? "Select your city"}
+                {copy?.city ?? "Lake City, Lahore"}
               </button>
 
               <button

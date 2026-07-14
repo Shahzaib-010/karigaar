@@ -41,7 +41,7 @@ export default function OTPInput({
 
   return (
     <div className="text-start">
-      <span className="mb-3 block text-sm font-semibold text-foreground">
+      <span className="mb-2 block text-sm font-medium text-foreground">
         {label}
       </span>
       <div
@@ -68,8 +68,8 @@ export default function OTPInput({
             inputMode="numeric"
             maxLength={1}
             aria-invalid={Boolean(error)}
-            className={`h-[60px] w-[52px] rounded-xl border bg-card text-center text-xl font-bold text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:cursor-not-allowed disabled:bg-background ${
-              error ? "border-error" : "border-border"
+            className={`h-12 w-11 rounded-lg border bg-white text-center text-base font-medium text-foreground outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 ${
+              error ? "border-destructive" : "border-input"
             }`}
             onChange={(event) => updateDigit(index, event.target.value)}
             onKeyDown={(event) => {

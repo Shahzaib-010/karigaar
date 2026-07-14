@@ -13,7 +13,7 @@ const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 const openSans = Open_Sans({
   subsets: ["latin"],
   variable: "--font-open-sans",
-  display: "swap",
+  display: "swap", 
 });
 
 export const metadata: Metadata = {

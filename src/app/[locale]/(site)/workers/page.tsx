@@ -4,6 +4,7 @@ import React, { useEffect, useReducer, useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { workerProfiles } from "@/src/data/workers";
 
 type WorkerListItem = {
   id: string;
@@ -87,6 +88,82 @@ const CITIES = [
   "Quetta",
 ];
 
+function normalizeString(value?: string) {
+  return (value || "").toString().toLowerCase();
+}
+
+function parseNumber(value: string) {
+  const cleaned = value.replace(/[^0-9.]/g, "");
+  const parsed = Number(cleaned);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function mapWorkerProfile(worker: (typeof workerProfiles)[number]): WorkerListItem {
+  const rating = Number(worker.rating);
+
+  return {
+    id: worker.slug,
+    name: worker.name,
+    photo: worker.photo || null,
+    trade: worker.trade,
+    skills: worker.skills,
+    city: worker.city,
+    area: worker.location,
+    rating: Number.isFinite(rating) ? rating : 0,
+    totalJobs: worker.jobs,
+    experienceYears: parseNumber(worker.experience),
+    startingPrice: parseNumber(worker.startingPrice),
+    isVerified: worker.verified,
+    isAvailable: worker.status === "online",
+    avgResponseMinutes: parseNumber(worker.responseAverage),
+  };
+}
+
+function filterWorkers(
+  workers: WorkerListItem[],
+  state: FilterState,
+): WorkerListItem[] {
+  let list = [...workers];
+
+  if (state.categories.length && !state.categories.includes("all")) {
+    const categorySet = new Set(
+      state.categories.map((category) => normalizeString(category)),
+    );
+
+    list = list.filter(
+      (worker) =>
+        categorySet.has(normalizeString(worker.trade)) ||
+        worker.skills.some((skill) => categorySet.has(normalizeString(skill))),
+    );
+  }
+
+  if (state.city && state.city !== "all") {
+    list = list.filter(
+      (worker) => normalizeString(worker.city) === normalizeString(state.city),
+    );
+  }
+
+  if (state.minRating && state.minRating > 0) {
+    list = list.filter((worker) => worker.rating >= state.minRating!);
+  }
+
+  if (state.availableOnly) {
+    list = list.filter((worker) => worker.isAvailable);
+  }
+
+  if (state.sortBy === "top_rated") {
+    list.sort((a, b) => b.rating - a.rating);
+  } else if (state.sortBy === "most_jobs") {
+    list.sort((a, b) => b.totalJobs - a.totalJobs);
+  } else if (state.sortBy === "price_asc") {
+    list.sort((a, b) => a.startingPrice - b.startingPrice);
+  } else if (state.sortBy === "price_desc") {
+    list.sort((a, b) => b.startingPrice - a.startingPrice);
+  }
+
+  return list;
+}
+
 export default function WorkersPage() {
   const t = useTranslations();
   const searchParams = useSearchParams();
@@ -140,22 +217,17 @@ export default function WorkersPage() {
       router.replace(url);
     }
 
-    async function fetchData() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(`/api/workers?${params.toString()}`);
-        if (!res.ok) throw new Error("Fetch failed");
-        const json = await res.json();
-        setWorkers(json.data);
-        setTotal(json.total);
-      } catch (e: any) {
-        setError(e.message || "error");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
+    setLoading(true);
+    setError(null);
+
+    const allWorkers = workerProfiles.map(mapWorkerProfile);
+    const filteredWorkers = filterWorkers(allWorkers, state);
+    const pageSize = 10;
+    const start = (state.page - 1) * pageSize;
+
+    setWorkers(filteredWorkers.slice(start, start + pageSize));
+    setTotal(filteredWorkers.length);
+    setLoading(false);
   }, [
     state.page,
     state.categories,

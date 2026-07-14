@@ -1,63 +1,28 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  IconArrowLeft,
-  IconChevronDown,
-  IconMail,
-  IconUser,
-} from "@tabler/icons-react";
-import Link from "next/link";
+import { IconChevronDown } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useReducer, useState } from "react";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { useState, type FormEvent } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { useAuth, type User } from "@/context/AuthContext";
-import AuthCard from "@/src/components/ui/AuthCard";
-import FormButton from "@/src/components/ui/FormButton";
-import FormInput from "@/src/components/ui/FormInput";
+import { AnimatePresence, motion } from "motion/react";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import OTPInput from "@/src/components/ui/OTPInput";
-import PasswordInput from "@/src/components/ui/PasswordInput";
-import PhoneInput from "@/src/components/ui/PhoneInput";
+import {
+  ApiError,
+  fetchCurrentUser,
+  loginRequest,
+  registerUser,
+  resendOtp,
+  verifyOtp,
+} from "@/src/lib/api";
 
-type SignupStep = "form" | "otp" | "verifying" | "success";
-
-type State = {
-  step: SignupStep;
-  pendingUser: User | null;
-  maskedEmail: string;
-  otpError: string;
-  resendNotice: boolean;
-  shakeOtp: boolean;
-  expiresAt: number;
-};
-
-type Action =
-  | { type: "OTP"; user: User; maskedEmail: string }
-  | { type: "BACK" }
-  | { type: "VERIFYING" }
-  | { type: "SUCCESS" }
-  | { type: "OTP_ERROR"; message: string }
-  | { type: "RESEND"; expiresAt: number }
-  | { type: "CLEAR_NOTICE" }
-  | { type: "CLEAR_SHAKE" }
-  | { type: "EXPIRE" };
-
-type RegisterResponse = {
-  user: Omit<Partial<User>, "roles" | "permissions"> & {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    city: string;
-    roles?: Array<{ name: string }> | string[];
-    permissions?: string[];
-  };
-  role?: string;
-  roles?: string[];
-  permissions?: string[];
-};
+type SignupStep = "details" | "otp";
+type ResendState = "idle" | "sending" | "sent";
 
 const cities = [
   "lahore",
@@ -72,84 +37,14 @@ const cities = [
   "other",
 ] as const;
 
-const OTP_TTL = 5 * 60 * 1000;
-const API_BASE_URL = "https://kaarigaar.chfarhanliaqat.site/api";
-const API_ENDPOINTS = {
-  registerCustomer: `${API_BASE_URL}/register/customer`,
-  verifyOtp: `${API_BASE_URL}/login/verify-otp`,
-  resendOtp: `${API_BASE_URL}/login/resend-otp`,
+/** Details captured before registration, reused for OTP verify + auto-login. */
+type PendingAccount = {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  city: string;
 };
-
-function maskEmail(email: string) {
-  const [name, domain] = email.split("@");
-  return `${name.slice(0, 1)}***@${domain}`;
-}
-
-function normalizeUser(response: RegisterResponse): User {
-  const responseRoles =
-    response.roles ??
-    response.user.roles?.map((role) =>
-      typeof role === "string" ? role : role.name,
-    ) ??
-    [];
-
-  return {
-    id: response.user.id,
-    name: response.user.name,
-    email: response.user.email,
-    phone: response.user.phone,
-    city: response.user.city,
-    address: response.user.address ?? "",
-    role: response.role ?? responseRoles[0] ?? "customer",
-    roles: responseRoles,
-    permissions: response.permissions ?? response.user.permissions ?? [],
-    created_at: response.user.created_at ?? new Date().toISOString(),
-  };
-}
-
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case "OTP":
-      return {
-        ...state,
-        step: "otp",
-        pendingUser: action.user,
-        maskedEmail: action.maskedEmail,
-        otpError: "",
-        shakeOtp: false,
-        expiresAt: Date.now() + OTP_TTL,
-      };
-    case "BACK":
-      return { ...state, step: "form", otpError: "", shakeOtp: false };
-    case "VERIFYING":
-      return { ...state, step: "verifying", otpError: "", shakeOtp: false };
-    case "SUCCESS":
-      return { ...state, step: "success" };
-    case "OTP_ERROR":
-      return {
-        ...state,
-        step: "otp",
-        otpError: action.message,
-        shakeOtp: true,
-      };
-    case "RESEND":
-      return {
-        ...state,
-        expiresAt: action.expiresAt,
-        resendNotice: true,
-        otpError: "",
-        shakeOtp: false,
-      };
-    case "CLEAR_NOTICE":
-      return { ...state, resendNotice: false };
-    case "CLEAR_SHAKE":
-      return { ...state, shakeOtp: false };
-    case "EXPIRE":
-      return { ...state, expiresAt: Date.now() - 1 };
-    default:
-      return state;
-  }
-}
 
 export default function SignupPage() {
   const t = useTranslations("signup");
@@ -157,450 +52,399 @@ export default function SignupPage() {
   const router = useRouter();
   const isRtl = locale === "ur";
   const { login } = useAuth();
-  const [otp, setOtp] = useState("");
-  const [registerError, setRegisterError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isResending, setIsResending] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState(OTP_TTL / 1000);
-  const [state, dispatch] = useReducer(reducer, {
-    step: "form",
-    pendingUser: null,
-    maskedEmail: "",
-    otpError: "",
-    resendNotice: false,
-    shakeOtp: false,
-    expiresAt: 0,
-  });
 
-  const schema = z
+  const [step, setStep] = useState<SignupStep>("details");
+  const [pending, setPending] = useState<PendingAccount | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [detailsError, setDetailsError] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [resendState, setResendState] = useState<ResendState>("idle");
+
+  const detailsSchema = z
     .object({
       name: z.string().min(3, t("errors.name")),
       email: z.string().email(t("errors.email")),
-      phone: z
-        .string()
-        .regex(/^3\d{9}$/, t("errors.phone")),
-      city: z.enum(cities, { error: t("errors.city") }),
       password: z.string().min(8, t("errors.password")),
-      password_confirmation: z.string(),
-      terms: z.boolean().refine((value) => value, t("errors.terms")),
+      confirmPassword: z.string(),
+      phone: z.string().regex(/^3\d{9}$/, t("errors.phone")),
+      city: z.enum(cities, { error: t("errors.city") }),
     })
-    .refine((data) => data.password === data.password_confirmation, {
-      path: ["password_confirmation"],
+    .refine((data) => data.password === data.confirmPassword, {
       message: t("errors.confirmPassword"),
+      path: ["confirmPassword"],
     });
 
-  type SignupFormValues = z.infer<typeof schema>;
+  type DetailsFormValues = z.infer<typeof detailsSchema>;
 
   const {
     control,
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm<SignupFormValues>({
-    resolver: zodResolver(schema),
+    handleSubmit: handleDetailsSubmit,
+    register: registerDetails,
+    formState: { errors: detailsErrors },
+  } = useForm<DetailsFormValues>({
+    resolver: zodResolver(detailsSchema),
     defaultValues: {
       name: "",
       email: "",
+      password: "",
+      confirmPassword: "",
       phone: "",
       city: "lahore",
-      password: "",
-      password_confirmation: "",
-      terms: false,
     },
   });
 
-  const password = useWatch({ control, name: "password" });
-  const email = useWatch({ control, name: "email" });
-  const firstName = state.pendingUser?.name.split(" ")[0] ?? "";
-  const isExpired = secondsLeft <= 0;
-  const timerText = `${Math.floor(secondsLeft / 60)
-    .toString()
-    .padStart(2, "0")}:${(secondsLeft % 60).toString().padStart(2, "0")}`;
+  async function onDetailsSubmit(values: DetailsFormValues) {
+    setIsRegistering(true);
+    setDetailsError("");
 
-  useEffect(() => {
-    if (state.step !== "otp") {
+    const email = values.email.trim().toLowerCase();
+
+    try {
+      await registerUser({
+        name: values.name.trim(),
+        email,
+        password: values.password,
+        password_confirmation: values.confirmPassword,
+      });
+
+      setPending({
+        name: values.name.trim(),
+        email,
+        password: values.password,
+        phone: values.phone,
+        city: values.city,
+      });
+      setOtpCode("");
+      setOtpError("");
+      setResendState("idle");
+      setStep("otp");
+    } catch (error) {
+      setDetailsError(error instanceof ApiError ? error.message : t("errors.submit"));
+    } finally {
+      setIsRegistering(false);
+    }
+  }
+
+  async function onOtpSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!pending) {
+      setStep("details");
       return;
     }
 
-    const timer = window.setInterval(() => {
-      const nextSeconds = Math.max(
-        0,
-        Math.ceil((state.expiresAt - Date.now()) / 1000),
+    if (otpCode.length !== 6) {
+      setOtpError(t("otp.incorrect"));
+      return;
+    }
+
+    setIsVerifying(true);
+    setOtpError("");
+
+    try {
+      await verifyOtp({ email: pending.email, otp: Number(otpCode) });
+
+      // verify-otp does not return a token, so log in with the stored password.
+      const { access_token } = await loginRequest({
+        email: pending.email,
+        password: pending.password,
+      });
+      const apiUser = await fetchCurrentUser(access_token);
+
+      login(
+        {
+          ...apiUser,
+          role: "customer",
+          phone: `0${pending.phone}`,
+          city: pending.city,
+        },
+        access_token,
       );
-      setSecondsLeft(nextSeconds);
-      if (nextSeconds === 0) {
-        dispatch({ type: "EXPIRE" });
-      }
-    }, 1000);
-
-    return () => window.clearInterval(timer);
-  }, [state.expiresAt, state.step]);
-
-  async function onSubmit(values: SignupFormValues) {
-    setIsSubmitting(true);
-    setRegisterError("");
-
-    try {
-      const response = await fetch(API_ENDPOINTS.registerCustomer, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-          phone: `0${values.phone}`,
-          city: values.city,
-          password: values.password,
-          password_confirmation: values.password_confirmation,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("registration failed");
-      }
-
-      const data = (await response.json()) as RegisterResponse;
-      const user = normalizeUser(data);
-      dispatch({ type: "OTP", user, maskedEmail: maskEmail(user.email) });
-      setSecondsLeft(OTP_TTL / 1000);
-    } catch {
-      setRegisterError(t("errors.submit"));
+      router.push(`/${locale}`);
+    } catch (error) {
+      setOtpError(error instanceof ApiError ? error.message : t("otp.incorrect"));
     } finally {
-      setIsSubmitting(false);
+      setIsVerifying(false);
     }
   }
 
-  async function verifyOtp() {
-    if (!state.pendingUser || otp.length !== 6 || isExpired) {
-      dispatch({ type: "OTP_ERROR", message: t("otp.incorrect") });
-      window.setTimeout(() => dispatch({ type: "CLEAR_SHAKE" }), 420);
+  async function handleResend() {
+    if (!pending || resendState === "sending") {
       return;
     }
 
-    dispatch({ type: "VERIFYING" });
+    setResendState("sending");
+    setOtpError("");
 
     try {
-      const response = await fetch(API_ENDPOINTS.verifyOtp, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: state.pendingUser.email, otp }),
-      });
-
-      if (!response.ok) {
-        throw new Error("otp failed");
-      }
-
-      window.setTimeout(() => {
-        login(state.pendingUser as User);
-        dispatch({ type: "SUCCESS" });
-      }, 500);
-    } catch {
-      dispatch({ type: "OTP_ERROR", message: t("otp.incorrect") });
-      window.setTimeout(() => dispatch({ type: "CLEAR_SHAKE" }), 420);
+      await resendOtp(pending.email);
+      setResendState("sent");
+    } catch (error) {
+      setResendState("idle");
+      setOtpError(error instanceof ApiError ? error.message : t("errors.otpSubmit"));
     }
   }
-
-  async function resendOtp() {
-    if (!state.pendingUser) {
-      return;
-    }
-
-    setIsResending(true);
-
-    try {
-      await fetch(API_ENDPOINTS.resendOtp, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: state.pendingUser.email }),
-      });
-      dispatch({ type: "RESEND", expiresAt: Date.now() + OTP_TTL });
-      setSecondsLeft(OTP_TTL / 1000);
-      window.setTimeout(() => dispatch({ type: "CLEAR_NOTICE" }), 3000);
-    } finally {
-      setIsResending(false);
-    }
-  }
-
-  const shellProps = {
-    logo: t("brand"),
-    tagline: t("tagline"),
-    isRtl,
-  };
 
   return (
     <main
       dir={isRtl ? "rtl" : "ltr"}
-      className="min-h-[calc(100dvh-80px)] bg-background"
+      className="flex min-h-[calc(100dvh-64px)] w-full overflow-hidden bg-white text-foreground sm:min-h-[calc(100dvh-80px)] font-karigaar"
     >
-      {state.step === "form" ? (
-        <div className="auth-step-enter">
-          <AuthCard
-            {...shellProps}
-            title={t("form.title")}
-            subtitle={t("form.subtitle")}
-          >
-            <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-              <FormInput
-                label={t("fields.name")}
-                placeholder={t("placeholders.name")}
-                icon={<IconUser size={18} stroke={1.8} />}
-                error={errors.name?.message}
-                {...register("name")}
-              />
-              <FormInput
-                label={t("fields.email")}
-                placeholder={t("placeholders.email")}
-                type="email"
-                icon={<IconMail size={18} stroke={1.8} />}
-                hint={t("hints.email")}
-                error={errors.email?.message}
-                {...register("email")}
-              />
-              <Controller
-                control={control}
-                name="phone"
-                render={({ field }) => (
-                  <PhoneInput
-                    label={t("fields.phone")}
-                    placeholder={t("placeholders.phone")}
-                    value={field.value}
-                    onBlur={field.onBlur}
-                    onChange={(event) =>
-                      field.onChange(event.target.value.replace(/\D/g, ""))
-                    }
-                    error={errors.phone?.message}
-                  />
-                )}
-              />
-              <label className="block text-start">
-                <span className="mb-2 block text-sm font-semibold text-foreground">
-                  {t("fields.city")}
-                </span>
-                <span className="relative block">
-                  <select
-                    className={`h-12 w-full appearance-none rounded-xl border bg-card ps-4 pe-11 text-start text-sm font-semibold text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 ${
-                      errors.city ? "border-error" : "border-border"
-                    }`}
-                    {...register("city")}
-                  >
-                    {cities.map((city) => (
-                      <option key={city} value={city}>
-                        {t(`cities.${city}`)}
-                      </option>
-                    ))}
-                  </select>
-                  <IconChevronDown
-                    size={20}
-                    stroke={1.8}
-                    className="pointer-events-none absolute end-4 top-1/2 -translate-y-1/2 text-muted"
-                  />
-                </span>
-                {errors.city ? (
-                  <span className="mt-1.5 block text-xs font-semibold text-error">
-                    {errors.city.message}
-                  </span>
-                ) : null}
-              </label>
-              <PasswordInput
-                label={t("fields.password")}
-                placeholder={t("placeholders.password")}
-                showLabel={t("password.show")}
-                hideLabel={t("password.hide")}
-                showStrength
-                value={password}
-                error={errors.password?.message}
-                {...register("password")}
-              />
-              <PasswordInput
-                label={t("fields.confirmPassword")}
-                placeholder={t("placeholders.confirmPassword")}
-                showLabel={t("password.show")}
-                hideLabel={t("password.hide")}
-                error={errors.password_confirmation?.message}
-                {...register("password_confirmation")}
-              />
-              <label className="flex items-start gap-3 text-start text-sm text-muted">
-                <input
-                  type="checkbox"
-                  className="mt-0.5 h-5 w-5 rounded border-border text-primary accent-primary focus:ring-primary"
-                  {...register("terms")}
-                />
-                <span>
-                  {t("terms.prefix")}{" "}
-                  <Link
-                    href={`/${locale}/terms`}
-                    className="font-bold text-primary"
-                  >
-                    {t("terms.terms")}
-                  </Link>{" "}
-                  {t("terms.and")}{" "}
-                  <Link
-                    href={`/${locale}/privacy`}
-                    className="font-bold text-primary"
-                  >
-                    {t("terms.privacy")}
-                  </Link>
-                </span>
-              </label>
-              {errors.terms ? (
-                <span className="-mt-2 block text-xs font-semibold text-error">
-                  {errors.terms.message}
-                </span>
-              ) : null}
-              {registerError ? (
-                <p className="rounded-xl border border-error px-4 py-3 text-sm font-semibold text-error">
-                  {registerError}
-                </p>
-              ) : null}
-              <FormButton type="submit" fullWidth loading={isSubmitting}>
-                {t("form.submit")}
-              </FormButton>
-            </form>
-          </AuthCard>
-        </div>
-      ) : null}
+      <div className="flex w-full flex-1 items-center justify-center px-4 py-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="flex w-full max-w-xl flex-col items-center gap-5"
+        >
+          <h1 className="pb-[3vw] text-5xl font-karigaar">Account Setup</h1>
 
-      {state.step === "otp" ? (
-        <div className="auth-step-enter">
-          <AuthCard
-            {...shellProps}
-            title={t("otp.title")}
-            subtitle={
-              <>
-                {t("otp.subtitle")}{" "}
-                <strong className="font-bold text-primary">
-                  {state.maskedEmail || maskEmail(email)}
-                </strong>
-              </>
-            }
-            eyebrow={
-              <button
-                type="button"
-                onClick={() => dispatch({ type: "BACK" })}
-                className="inline-flex items-center gap-2 text-sm font-bold text-primary"
-              >
-                <IconArrowLeft size={18} stroke={1.8} />
-                {t("otp.back")}
-              </button>
-            }
-          >
-            <div className="grid gap-6">
-              <OTPInput
-                value={otp}
-                onChange={setOtp}
-                label={t("otp.label")}
-                error={state.otpError}
-                shake={state.shakeOtp}
-              />
-              <div className="text-center">
-                {isExpired ? (
-                  <p className="text-sm font-bold text-error">{t("otp.expired")}</p>
-                ) : (
-                  <p
-                    className={`text-sm font-bold ${
-                      secondsLeft < 60 ? "text-error" : "text-muted"
-                    }`}
-                  >
-                    {timerText}
-                  </p>
-                )}
-                {state.resendNotice ? (
-                  <p className="mt-2 text-sm font-bold text-success">
-                    {t("otp.resendSuccess")}
-                  </p>
-                ) : null}
-              </div>
-              <FormButton
-                type="button"
-                fullWidth
-                disabled={isExpired || otp.length !== 6}
-                onClick={verifyOtp}
-              >
-                {t("otp.verify")}
-              </FormButton>
-              <FormButton
-                type="button"
-                variant="ghost"
-                fullWidth
-                disabled={!isExpired}
-                loading={isResending}
-                onClick={resendOtp}
-              >
-                {t("otp.resend")}
-              </FormButton>
-            </div>
-          </AuthCard>
-        </div>
-      ) : null}
-
-      {state.step === "verifying" ? (
-        <div className="auth-step-enter">
-          <AuthCard
-            {...shellProps}
-            title={t("verifying.title")}
-            subtitle={t("verifying.subtitle")}
-          >
-            <div className="flex flex-col items-center gap-5 py-8">
-              <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              <p className="text-sm font-bold text-muted">{t("verifying.text")}</p>
-            </div>
-          </AuthCard>
-        </div>
-      ) : null}
-
-      {state.step === "success" ? (
-        <div className="auth-step-enter">
-          <AuthCard
-            {...shellProps}
-            title={t("success.title")}
-            subtitle={t("success.subtitle")}
-          >
-            <div className="flex flex-col items-center gap-6 py-4 text-center">
-              <svg
-                width="72"
-                height="72"
-                viewBox="0 0 72 72"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="36"
-                  cy="36"
-                  r="34"
-                  className="stroke-success"
-                  strokeWidth="2"
-                />
-                <path
-                  d="M22 37.5L32 47L51 26"
-                  className="success-check stroke-primary"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <p className="text-xl font-bold text-primary">
-                {t("success.welcome", { name: firstName })}
-              </p>
-              <div className="grid w-full gap-3 sm:grid-cols-2">
-                <FormButton
-                  type="button"
-                  fullWidth
-                  onClick={() => router.push(`/${locale}`)}
+          <div className="w-full max-w-sm">
+            <AnimatePresence mode="wait" initial={false}>
+              {step === "details" ? (
+                <motion.form
+                  key="details-step"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                  className="grid gap-3"
+                  onSubmit={handleDetailsSubmit(onDetailsSubmit)}
                 >
-                  {t("success.home")}
-                </FormButton>
-                <FormButton
-                  type="button"
-                  variant="ghost"
-                  fullWidth
-                  onClick={() => router.push(`/${locale}/workers`)}
+                  <div className="grid gap-3 sm:gap-3.5">
+                    <Field label={t("fields.name")} error={detailsErrors.name?.message}>
+                      <Input
+                        placeholder={t("placeholders.name")}
+                        autoComplete="name"
+                        aria-invalid={Boolean(detailsErrors.name)}
+                        className="h-11 bg-white"
+                        {...registerDetails("name")}
+                      />
+                    </Field>
+
+                    <Field
+                      label={t("fields.email")}
+                      error={detailsErrors.email?.message}
+                    >
+                      <Input
+                        type="email"
+                        placeholder={t("placeholders.email")}
+                        autoComplete="email"
+                        aria-invalid={Boolean(detailsErrors.email)}
+                        className="h-11 bg-white"
+                        {...registerDetails("email")}
+                      />
+                    </Field>
+
+                    <Field
+                      label={t("fields.password")}
+                      error={detailsErrors.password?.message}
+                    >
+                      <Input
+                        type="password"
+                        placeholder={t("placeholders.password")}
+                        autoComplete="new-password"
+                        aria-invalid={Boolean(detailsErrors.password)}
+                        className="h-11 bg-white"
+                        {...registerDetails("password")}
+                      />
+                    </Field>
+
+                    <Field
+                      label={t("fields.confirmPassword")}
+                      error={detailsErrors.confirmPassword?.message}
+                    >
+                      <Input
+                        type="password"
+                        placeholder={t("placeholders.confirmPassword")}
+                        autoComplete="new-password"
+                        aria-invalid={Boolean(detailsErrors.confirmPassword)}
+                        className="h-11 bg-white"
+                        {...registerDetails("confirmPassword")}
+                      />
+                    </Field>
+
+                    <Controller
+                      control={control}
+                      name="phone"
+                      render={({ field }) => (
+                        <Field
+                          label={t("fields.phone")}
+                          error={detailsErrors.phone?.message}
+                        >
+                          <div className="flex h-11 items-stretch overflow-hidden rounded-lg border border-input bg-white focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
+                            <span className="flex shrink-0 items-center border-e border-input bg-muted px-3 text-sm font-medium text-muted-foreground">
+                              +92
+                            </span>
+                            <input
+                              inputMode="numeric"
+                              placeholder={t("placeholders.phone")}
+                              value={field.value}
+                              onBlur={field.onBlur}
+                              onChange={(event) =>
+                                field.onChange(event.target.value.replace(/\D/g, ""))
+                              }
+                              className="w-full bg-white px-3 text-sm outline-none placeholder:text-muted-foreground"
+                              aria-invalid={Boolean(detailsErrors.phone)}
+                            />
+                          </div>
+                        </Field>
+                      )}
+                    />
+
+                    <Field
+                      label={t("fields.location")}
+                      error={detailsErrors.city?.message}
+                    >
+                      <span className="relative block">
+                        <select
+                          className={`h-11 w-full appearance-none rounded-lg border bg-white px-3 text-start text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/50 ${
+                            detailsErrors.city ? "border-destructive" : "border-input"
+                          }`}
+                          {...registerDetails("city")}
+                        >
+                          {cities.map((city) => (
+                            <option key={city} value={city}>
+                              {t(`cities.${city}`)}
+                            </option>
+                          ))}
+                        </select>
+                        <IconChevronDown
+                          size={18}
+                          stroke={1.8}
+                          className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        />
+                      </span>
+                    </Field>
+                  </div>
+
+                  {detailsError ? (
+                    <p className="text-center text-xs font-semibold text-error sm:text-sm">
+                      {detailsError}
+                    </p>
+                  ) : null}
+
+                  <Button
+                    type="submit"
+                    disabled={isRegistering}
+                    className="h-11 w-full bg-foreground text-background hover:bg-foreground/90"
+                  >
+                    {isRegistering ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                        {t("details.submit")}
+                      </span>
+                    ) : (
+                      t("details.submit")
+                    )}
+                  </Button>
+                </motion.form>
+              ) : null}
+
+              {step === "otp" ? (
+                <motion.form
+                  key="otp-step"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                  className="grid gap-3"
+                  onSubmit={onOtpSubmit}
                 >
-                  {t("success.findWorker")}
-                </FormButton>
-              </div>
-            </div>
-          </AuthCard>
-        </div>
-      ) : null}
+                  <div className="text-center">
+                    <p className="mt-2 text-xs leading-5 text-muted-foreground sm:text-sm">
+                      {t("otp.subtitle")}{" "}
+                      <span className="font-semibold text-foreground">
+                        {pending?.email}
+                      </span>
+                    </p>
+                  </div>
+
+                  <OTPInput
+                    label={t("otp.label")}
+                    value={otpCode}
+                    disabled={isVerifying}
+                    onChange={(value) => {
+                      setOtpCode(value);
+                      if (otpError) {
+                        setOtpError("");
+                      }
+                    }}
+                    error={otpError}
+                  />
+
+                  <div className="flex items-center justify-center gap-4 text-xs font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStep("details");
+                        setOtpCode("");
+                        setOtpError("");
+                      }}
+                      className="text-muted-foreground transition hover:text-primary"
+                    >
+                      {t("otp.back")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleResend}
+                      disabled={resendState === "sending"}
+                      className="text-muted-foreground transition hover:text-primary disabled:opacity-50"
+                    >
+                      {resendState === "sending"
+                        ? t("verifying.title")
+                        : resendState === "sent"
+                          ? t("otp.resendSuccess")
+                          : t("otp.resend")}
+                    </button>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={isVerifying}
+                    className="h-11 w-full bg-foreground text-background hover:bg-foreground/90"
+                  >
+                    {isVerifying ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                        {t("otp.verify")}
+                      </span>
+                    ) : (
+                      t("otp.verify")
+                    )}
+                  </Button>
+                </motion.form>
+              ) : null}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
     </main>
+  );
+}
+
+function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block text-start">
+      <span className="mb-2 block text-sm font-medium text-foreground">
+        {label}
+      </span>
+      {children}
+      {error ? (
+        <span className="mt-1.5 block text-xs font-medium text-destructive">
+          {error}
+        </span>
+      ) : null}
+    </label>
   );
 }

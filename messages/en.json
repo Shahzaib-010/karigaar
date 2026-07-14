@@ -34,6 +34,36 @@
       "logout": "Logout"
     }
   },
+  "login": {
+    "brand": "Karigaar",
+    "eyebrow": "Welcome back",
+    "heading": "Login",
+    "subtitle": "Sign in to continue booking trusted home services.",
+    "card": {
+      "title": "Account login",
+      "subtitle": "Use the email and password for your Karigaar account."
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Password"
+    },
+    "placeholders": {
+      "email": "you@example.com",
+      "password": "Enter your password"
+    },
+    "submit": "Login",
+    "submitting": "Logging in...",
+    "footer": {
+      "prompt": "Don't have an account?",
+      "link": "Sign up"
+    },
+    "errors": {
+      "email": "Enter a valid email address.",
+      "password": "Password is required.",
+      "invalidResponse": "The login API did not return user data.",
+      "submit": "We could not log you in. Please try again."
+    }
+  },
   "signup": {
     "brand": "Karigaar",
     "tagline": "Pakistan's home services marketplace",
@@ -42,10 +72,21 @@
       "subtitle": "Book trusted home service professionals across Pakistan.",
       "submit": "Create Account"
     },
+    "email": {
+      "title": "Verify your email",
+      "subtitle": "Enter your email to verify it first.",
+      "submit": "Verify email"
+    },
+    "details": {
+      "title": "Complete your details",
+      "subtitle": "Your email is verified. Add your profile details to register.",
+      "submit": "Register"
+    },
     "fields": {
       "name": "Full Name",
       "email": "Email",
       "phone": "Phone Number",
+      "location": "Location",
       "city": "City",
       "password": "Password",
       "confirmPassword": "Confirm Password"
@@ -90,12 +131,13 @@
       "password": "Password must be at least 8 characters.",
       "confirmPassword": "Passwords must match.",
       "terms": "Please accept the terms and privacy policy.",
+      "otpSubmit": "We could not send the OTP. Please try again.",
       "submit": "We could not create your account. Please try again."
     },
     "otp": {
       "title": "Check Your Email",
       "subtitle": "We sent a 6-digit code to",
-      "back": "Back to signup",
+      "back": "Change email",
       "label": "Verification code",
       "verify": "Verify Code",
       "resend": "Resend Code",
@@ -211,12 +253,18 @@
     },
     "whyChoose": {
       "aria": "Why choose Karigaar",
-      "verified.title": "Verified Workers",
-      "verified.body": "Every worker is CNIC verified and background checked",
-      "pricing.title": "Transparent Pricing",
-      "pricing.body": "Starting price shown upfront — no surprises",
-      "booking.title": "Fast Booking",
-      "booking.body": "Book in under 60 seconds, same-day slots available"
+      "verified": {
+        "title": "Verified Workers",
+        "body": "Every worker is CNIC verified and background checked"
+      },
+      "pricing": {
+        "title": "Transparent Pricing",
+        "body": "Starting price shown upfront — no surprises"
+      },
+      "booking": {
+        "title": "Fast Booking",
+        "body": "Book in under 60 seconds, same-day slots available"
+      }
     },
     "plumber": {
       "name": "Plumber",
