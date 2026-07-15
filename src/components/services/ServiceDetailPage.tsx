@@ -397,20 +397,6 @@ export default function ServiceDetailPage({ locale, service }: Props) {
                     <p>Starting from {worker.startingPrice}</p>
                     <p>Responds in about {worker.responseAverage}</p>
                   </div>
-                  <div className="mt-5 grid gap-2 sm:grid-cols-2">
-                    <Link
-                      href={`/${locale}/workers/${worker.slug}`}
-                      className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition-colors hover:border-(--primary) hover:text-(--primary)"
-                    >
-                      View Profile
-                    </Link>
-                    <Link
-                      href={`/${locale}/workers/${worker.slug}`}
-                      className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-(--primary) px-4 text-sm font-bold text-white transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_88%,black)]"
-                    >
-                      Book Now
-                    </Link>
-                  </div>
                 </article>
               ))}
             </div>

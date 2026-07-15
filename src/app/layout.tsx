@@ -3,6 +3,7 @@ import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import enMessages from "../../messages/en.json";
 import { AuthProvider } from "@/context/AuthContext";
+import StoreProvider from "@/src/store/StoreProvider";
 import { Open_Sans, Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,13 +30,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("min-h-screen", "antialiased", openSans.variable, "font-sans", geist.variable)}>
       <body className="flex min-h-screen flex-col">
-        <TooltipProvider>
-          <AuthProvider>
-            <NextIntlClientProvider locale="en" messages={enMessages}>
-              {children}
-            </NextIntlClientProvider>
-          </AuthProvider>
-        </TooltipProvider>
+        <StoreProvider>
+          <TooltipProvider>
+            <AuthProvider>
+              <NextIntlClientProvider locale="en" messages={enMessages}>
+                {children}
+              </NextIntlClientProvider>
+            </AuthProvider>
+          </TooltipProvider>
+        </StoreProvider>
         <Analytics />
       </body>
     </html>

@@ -10,7 +10,8 @@ import { z } from "zod";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ApiError, fetchCurrentUser, loginRequest } from "@/src/lib/api";
+import { ApiError, loginRequest } from "@/src/lib/api";
+import { resolveRedirectPath } from "@/src/lib/permissions";
 
 type LoginFormValues = {
   email: string;
@@ -45,11 +46,10 @@ export default function LoginPage() {
     setSubmitError("");
 
     try {
-      const { access_token } = await loginRequest(values);
-      const apiUser = await fetchCurrentUser(access_token);
+      const { access_token, user, redirect_to } = await loginRequest(values);
 
-      login({ ...apiUser, role: "customer" }, access_token);
-      router.push(`/${locale}`);
+      login(user, access_token);
+      router.push(resolveRedirectPath(redirect_to, locale));
     } catch (error) {
       setSubmitError(
         error instanceof ApiError

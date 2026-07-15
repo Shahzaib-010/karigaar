@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaarigar API — Reference for Frontend</title>
+<style>
+  :root {
+    --paper-page: #f6f4ee;
+    --panel: #ffffff;
+    --ink: #1c2b3a;
+    --muted: #5c6773;
+    --faint: #8a94a0;
+    --accent: #2f5f8a;
+    --accent-soft: #d7e4ee;
+    --rule: #d9d3c4;
+    --code-bg: #f2f0e9;
+
+    --get: #1a7f5a;   --get-soft: #dcf0e7;
+    --post: #2f5f8a;  --post-soft: #d7e4ee;
+    --put: #9a6a12;   --put-soft: #f2e6cc;
+    --patch: #9a6a12; --patch-soft: #f2e6cc;
+    --delete: #b3261e; --delete-soft: #f6dedc;
+
+    --pill-warn-bg: #f6dedc;
+    --pill-warn-ink: #8a2c24;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper-page: #0f1720;
+      --panel: #161f29;
+      --ink: #dde6ee;
+      --muted: #9aa6b2;
+      --faint: #6d7986;
+      --accent: #6fa8d6;
+      --accent-soft: #1c3348;
+      --rule: #263544;
+      --code-bg: #101820;
+
+      --get: #57c99a;   --get-soft: #123528;
+      --post: #6fa8d6;  --post-soft: #1c3348;
+      --put: #e0ac4a;   --put-soft: #3a2c10;
+      --patch: #e0ac4a; --patch-soft: #3a2c10;
+      --delete: #e2897f; --delete-soft: #3a1e1c;
+
+      --pill-warn-bg: #3a1e1c;
+      --pill-warn-ink: #e2897f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper-page: #0f1720; --panel: #161f29; --ink: #dde6ee; --muted: #9aa6b2; --faint: #6d7986;
+    --accent: #6fa8d6; --accent-soft: #1c3348; --rule: #263544; --code-bg: #101820;
+    --get: #57c99a; --get-soft: #123528; --post: #6fa8d6; --post-soft: #1c3348;
+    --put: #e0ac4a; --put-soft: #3a2c10; --patch: #e0ac4a; --patch-soft: #3a2c10;
+    --delete: #e2897f; --delete-soft: #3a1e1c; --pill-warn-bg: #3a1e1c; --pill-warn-ink: #e2897f;
+  }
+  :root[data-theme="light"] {
+    --paper-page: #f6f4ee; --panel: #ffffff; --ink: #1c2b3a; --muted: #5c6773; --faint: #8a94a0;
+    --accent: #2f5f8a; --accent-soft: #d7e4ee; --rule: #d9d3c4; --code-bg: #f2f0e9;
+    --get: #1a7f5a; --get-soft: #dcf0e7; --post: #2f5f8a; --post-soft: #d7e4ee;
+    --put: #9a6a12; --put-soft: #f2e6cc; --patch: #9a6a12; --patch-soft: #f2e6cc;
+    --delete: #b3261e; --delete-soft: #f6dedc; --pill-warn-bg: #f6dedc; --pill-warn-ink: #8a2c24;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper-page);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+  }
+
+  code, .mono {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", monospace;
+  }
+  code {
+    background: var(--code-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", monospace;
+    font-size: 12.5px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  pre code { background: none; padding: 0; }
+
+  .shell { display: flex; min-height: 100vh; }
+
+  /* ---------- Sidebar ---------- */
+  nav.side {
+    width: 250px;
+    flex: 0 0 250px;
+    border-right: 1px solid var(--rule);
+    padding: 28px 18px 60px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .brand {
+    font-family: ui-monospace, monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 4px;
+  }
+  .brand-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 0 0 26px;
+  }
+  nav.side .group-title {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin: 22px 0 6px;
+    padding: 0 8px;
+  }
+  nav.side .group-title:first-of-type { margin-top: 0; }
+  nav.side a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  nav.side a:hover { background: var(--accent-soft); color: var(--ink); }
+  nav.side a .m {
+    font-size: 9.5px;
+    font-weight: 700;
+    font-family: ui-monospace, monospace;
+    width: 34px;
+    flex: 0 0 34px;
+    text-align: center;
+    border-radius: 4px;
+    padding: 1.5px 0;
+  }
+
+  /* ---------- Main ---------- */
+  main { flex: 1; min-width: 0; padding: 48px 40px 120px; max-width: 900px; }
+
+  h1 {
+    font-size: clamp(26px, 3.4vw, 34px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  .lede { color: var(--muted); font-size: 15.5px; max-width: 68ch; margin: 0 0 32px; }
+
+  .infobox {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  .infobox h3 { margin: 0 0 10px; font-size: 14px; }
+  .infobox p, .infobox li { font-size: 13.5px; color: var(--muted); }
+  .infobox + .infobox { margin-top: -4px; }
+
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; font-size: 13.5px; }
+  .kv dt { color: var(--faint); }
+  .kv dd { margin: 0; }
+
+  table.matrix { border-collapse: collapse; width: 100%; font-size: 13px; margin: 12px 0 0; }
+  table.matrix th, table.matrix td { border: 1px solid var(--rule); padding: 7px 10px; text-align: left; }
+  table.matrix th { background: var(--code-bg); font-weight: 600; }
+  table.matrix td.yes { color: var(--get); font-weight: 700; text-align: center; }
+  table.matrix td.no { color: var(--faint); text-align: center; }
+
+  section.group { margin-top: 56px; }
+  section.group > h2 {
+    font-size: 20px;
+    margin: 0 0 6px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  section.group > .group-desc { color: var(--muted); font-size: 13.5px; margin: 10px 0 24px; }
+
+  .endpoint {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    scroll-margin-top: 20px;
+  }
+  .endpoint-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .method {
+    font-family: ui-monospace, monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 5px;
+    letter-spacing: 0.03em;
+  }
+  .method.get    { background: var(--get-soft);    color: var(--get); }
+  .method.post   { background: var(--post-soft);   color: var(--post); }
+  .method.put    { background: var(--put-soft);    color: var(--put); }
+  .method.patch  { background: var(--patch-soft);  color: var(--patch); }
+  .method.delete { background: var(--delete-soft); color: var(--delete); }
+  .path { font-family: ui-monospace, monospace; font-size: 14.5px; font-weight: 600; }
+  .access {
+    margin-left: auto;
+    font-size: 11.5px;
+    color: var(--muted);
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    padding: 2px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .summary { color: var(--muted); font-size: 13.5px; margin: 4px 0 16px; }
+
+  .endpoint h4 {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin: 18px 0 8px;
+  }
+  .endpoint h4:first-of-type { margin-top: 4px; }
+
+  table.fields { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.fields th, table.fields td { text-align: left; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  table.fields th { color: var(--faint); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+  table.fields td.req { color: var(--delete); font-weight: 600; font-size: 12px; }
+  table.fields td.opt { color: var(--faint); font-size: 12px; }
+  table.fields .fname { font-family: ui-monospace, monospace; white-space: nowrap; }
+  table.fields .ftype { color: var(--muted); white-space: nowrap; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .notes { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .notes li { font-size: 13px; color: var(--muted); padding-left: 18px; position: relative; }
+  .notes li::before { content: "→"; position: absolute; left: 0; color: var(--accent); }
+  .notes li.warn { color: var(--pill-warn-ink); }
+  .notes li.warn::before { content: "⚠"; color: var(--pill-warn-ink); }
+
+  footer.page { margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--rule); font-size: 12.5px; color: var(--faint); }
+
+  @media (max-width: 880px) {
+    nav.side { position: static; height: auto; width: 100%; flex: none; border-right: none; border-bottom: 1px solid var(--rule); }
+    .shell { flex-direction: column; }
+    main { padding: 32px 20px 100px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side" id="sideNav"></nav>
+  <main>
+    <p class="brand">Karrigar-api · v1</p>
+    <h1>API Reference</h1>
+    <p class="lede">
+      Everything the frontend needs to talk to the Kaarigar backend — auth flow, every endpoint,
+      request fields, response shapes, and the gotchas that aren't obvious from the response alone.
+    </p>
+
+    <div class="infobox">
+      <h3>Base URL &amp; auth</h3>
+      <dl class="kv">
+        <dt>Base URL</dt><dd><code>http://karrigar-api.test/api</code> <span style="color:var(--faint)">(swap host for staging/production)</span></dd>
+        <dt>Auth type</dt><dd>Laravel Sanctum — bearer token</dd>
+        <dt>Header</dt><dd><code>Authorization: Bearer &lt;access_token&gt;</code></dd>
+        <dt>Content type</dt><dd><code>Accept: application/json</code> on every request (also <code>Content-Type: application/json</code> for JSON bodies)</dd>
+        <dt>Token source</dt><dd>returned as <code>access_token</code> from <a href="#post-login"><code>POST /login</code></a> — store it, attach to every request after</dd>
+      </dl>
+    </div>
+
+    <div class="infobox">
+      <h3>Quick start (register → verify → login → call)</h3>
+      <ol style="font-size:13.5px; color:var(--muted); padding-left:20px; margin:0;">
+        <li><code>POST /register</code> with name/email/password/phone_number/address → account created as <strong>client</strong> role, OTP emailed</li>
+        <li><code>POST /verify-otp</code> with email + the 6-digit code from the email</li>
+        <li><code>POST /login</code> with email/password → get <code>access_token</code> and a <code>redirect_to</code> path telling you which panel to open</li>
+        <li>Attach <code>Authorization: Bearer &lt;access_token&gt;</code> to every subsequent request</li>
+        <li><code>GET /me</code> any time to refresh the current user's profile, roles and permissions (e.g. after a role change)</li>
+      </ol>
+      <p style="font-size:12.5px; color:var(--faint); margin:14px 0 0;">
+        All four of these are rate-limited per IP: register/login 5 per minute, resend-otp 3 per minute, verify-otp 10 per minute.
+        A <code>429</code> means back off and retry after a minute — show a "too many attempts, try again shortly" message rather than treating it as a form error.
+      </p>
+    </div>
+
+    <div class="infobox">
+      <h3>Roles &amp; what each can do</h3>
+      <p style="margin-top:0">Three roles share one <code>users</code> table: <code>client</code>, <code>admin</code>, <code>superadmin</code>. <code>redirect_to</code> from <code>/login</code> tells you which panel to route to — you don't need to inspect roles yourself for routing, but you do need them to conditionally show/hide UI.</p>
+      <table class="matrix">
+        <tr><th>Capability</th><th>client</th><th>admin</th><th>superadmin</th></tr>
+        <tr><td>Browse categories / sub-categories / pricing</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Create / cancel own orders, leave reviews</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+        <tr><td>Manage categories, sub-categories, pricing, workers</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>View all orders, assign workers, update order status</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Manage booking slots, view dashboard stats</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>List users, assign the <code>client</code>/<code>admin</code> role</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Grant the <code>superadmin</code> role</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+        <tr><td>Create / edit / delete roles &amp; permissions</td><td class="no">—</td><td class="no">view only</td><td class="yes">✓</td></tr>
+      </table>
+      <p style="margin-bottom:0">
+        Dev-only seeded logins for testing admin/superadmin panels: <code>admin@kaarigar.com</code> / <code>Admin@12345</code>
+        and <code>superadmin@kaarigar.com</code> / <code>Super@12345</code>. Registration through <code>/register</code> always
+        creates a <code>client</code> — to make someone an admin, log in as one of these and call
+        <a href="#patch-user-role"><code>PATCH /users/{id}/role</code></a>.
+      </p>
+    </div>
+
+    <div class="infobox" style="border-color:var(--delete);">
+      <h3 style="color:var(--pill-warn-ink)">⚠ Read before building forms</h3>
+      <ul style="margin:0; padding-left:18px;">
+        <li><strong><code>status</code> on Category and Sub-Category is boolean</strong> (<code>true</code>/<code>false</code>), not a string like <code>"active"</code>.</li>
+        <li>Some error messages come back in <strong>Urdu</strong> (booking slot conflicts, review rules) — treat <code>message</code> as human-readable text to show as-is, don't pattern-match on it in English.</li>
+        <li>Deleting a category, sub-category, price-category, or worker is a <strong>soft delete</strong> — the record disappears from every list/show endpoint immediately, but existing orders/reviews that reference it keep working and still show its name in their loaded relations.</li>
+        <li>Only a <strong>superadmin</strong> can grant the <code>superadmin</code> role — an admin calling <code>PATCH /users/{id}/role</code> with <code>role: "superadmin"</code> gets a <code>403</code>.</li>
+      </ul>
+    </div>
+
+    <div class="infobox">
+      <h3>One envelope shape for every list</h3>
+      <p style="margin:0;">
+        Every list endpoint in this API — categories, sub-categories, price-categories, workers, orders, reviews, notifications, users —
+        returns the same paginator shape, so you can write one generic "unwrap a list response" helper and reuse it everywhere:
+      </p>
+      <pre style="margin-top:12px;"><code>{
+  "current_page": 1, "per_page": 20, "total": 46, "last_page": 3,
+  "data": [ ... ],
+  "first_page_url": "...", "next_page_url": "...", "prev_page_url": "...", "links": {...}
+}</code></pre>
+      <p style="margin:12px 0 0;">
+        Single-item endpoints (<code>show</code>) return <code>{"data": {...}}</code>. Mutations (<code>store</code>/<code>update</code>) return
+        <code>{"message": "...", "data": {...}}</code>. A handful of small, bounded lists that will never need pagination —
+        <code>/roles</code>, <code>/permissions</code>, <code>/workers/available</code>, <code>/booking-slots/available</code>, <code>/booking-slots/calendar</code> —
+        stay as plain <code>{"data": [...]}</code> since wrapping them in pagination metadata would be pure overhead.
+      </p>
+    </div>
+
+    <div id="content"></div>
+
+    <footer class="page">Generated for the Kaarigar frontend team · reflects the API as of this backend build.</footer>
+  </main>
+</div>
+
+<script>
+const API = [
+  {
+    id: 'auth', title: 'Authentication', desc: 'Registration, OTP verification, login. All public — no token needed.',
+    endpoints: [
+      {
+        method: 'POST', path: '/register', access: 'Public',
+        summary: 'Create a client account. OTP is emailed automatically.',
+        body: [
+          ['name', 'string', true, 'max 255'],
+          ['email', 'string', true, 'must be unique'],
+          ['password', 'string', true, 'min 8 chars'],
+          ['password_confirmation', 'string', true, 'must match password'],
+          ['phone_number', 'string', true, 'max 20'],
+          ['address', 'string', true, 'max 255'],
+          ['map_locate', 'string', false, 'optional GPS pin/text'],
+        ],
+        response: `201 Created
+{
+  "message": "User registered successfully. Please check your email you@example.com for the OTP to verify your account."
+}`,
+        notes: [
+          'Role is always set to client — there is no way to register as admin.',
+          '422 with field errors if email is taken or fields fail validation.',
+          'Rate limited: 5 requests/minute per IP, 429 beyond that.',
+        ],
+      },
+      {
+        method: 'POST', path: '/verify-otp', access: 'Public',
+        summary: 'Confirm the 6-digit OTP emailed on register (or resend).',
+        body: [
+          ['email', 'string', true, ''],
+          ['otp', 'string', true, '6 digits, expires 10 minutes after being sent'],
+        ],
+        response: `200 OK
+{ "message": "Email verified successfully" }`,
+        notes: [
+          '400 {"message": "Invalid OTP"} or {"message": "OTP expired"} — on expiry, call /resend-otp for a new one.',
+          'Login is blocked until this step succeeds.',
+          'Rate limited: 10 requests/minute per IP.',
+        ],
+      },
+      {
+        method: 'POST', path: '/resend-otp', access: 'Public',
+        summary: 'Issue a fresh OTP (old one invalidated), emailed again.',
+        body: [['email', 'string', true, '']],
+        response: `200 OK
+{ "message": "OTP resent successfully. Please check your email for the new OTP." }`,
+        notes: ['Rate limited: 3 requests/minute per IP — keep a client-side cooldown on the resend button to match.'],
+      },
+      {
+        method: 'POST', path: '/login', access: 'Public',
+        summary: 'Exchange credentials for a bearer token and a redirect hint.',
+        body: [
+          ['email', 'string', true, ''],
+          ['password', 'string', true, ''],
+        ],
+        response: `200 OK
+{
+  "access_token": "1|abcdef...",
+  "token_type": "Bearer",
+  "redirect_to": "/dashboard",
+  "user": {
+    "id": 4, "name": "Ali Raza", "email": "ali@example.com",
+    "phone_number": "03001234567", "address": "...", "map_locate": null,
+    "is_verified": true,
+    "roles": ["client"],
+    "permissions": ["order.view", "order.create", "order.cancel", "review.create", "..."]
+  }
+}`,
+        notes: [
+          'redirect_to is one of /dashboard (client), /admin/dashboard (admin), /superadmin/dashboard (superadmin) — use it directly for routing.',
+          '401 if credentials are wrong, 403 {"message": "Email not verified"} if OTP step was skipped.',
+          'Rate limited: 5 requests/minute per IP, 429 beyond that — this is your main brute-force guard, don\'t retry automatically on 401.',
+        ],
+      },
+      {
+        method: 'GET', path: '/me', access: 'Auth only', id: 'get-me',
+        summary: 'Current user\'s profile, roles and permissions — call after login or on app boot to hydrate session.',
+        response: `200 OK
+{ "data": { "id": 4, "name": "...", "email": "...", "roles": [...], "permissions": [...], "...": "same shape as user in /login" } }`,
+        notes: [],
+      },
+    ],
+  },
+  {
+    id: 'categories', title: 'Categories', desc: 'Top-level service categories, e.g. "Home Repair". Soft-deletable.',
+    endpoints: [
+      { method: 'GET', path: '/categories', access: 'permission: category.view',
+        summary: 'Paginated list, each with its sub_categories (and each sub-category\'s category_pricings) nested. Optional ?per_page=.',
+        response: `200 OK
+{
+  "current_page": 1, "per_page": 20, "total": 6, "last_page": 1,
+  "data": [
+    { "id": 1, "name": "Home Repair", "slug": "home-repair", "base_price": "500.00", "status": true,
+      "sub_categories": [ { "id": 1, "title": "AC Service", "category_pricings": [ {"id":1,"price":"1500.00","job_type":"..."} ] } ] }
+  ]
+}`, notes: [] },
+      { method: 'GET', path: '/categories/{id}', access: 'permission: category.view',
+        summary: 'Single category with the same nested relations. 404 {"message": "Category not found"} if missing or soft-deleted.', response: '200 {"data": {...}}', notes: [] },
+      { method: 'POST', path: '/categories', access: 'permission: category.create',
+        summary: 'Create a category. slug is generated from name server-side — don\'t send it.',
+        body: [
+          ['name', 'string', true, 'max 255'], ['description', 'string', false, ''],
+          ['meta_title', 'string', false, 'max 255'], ['meta_description', 'string', false, ''],
+          ['meta_keywords', 'string', false, ''], ['base_price', 'decimal', false, '>= 0'],
+          ['status', 'boolean', false, 'true/false, default false'],
+        ],
+        response: '201 {"message": "Category created successfully", "data": {...}}', notes: ['422 with field errors if name is missing or base_price is negative/non-numeric.'] },
+      { method: 'PUT', path: '/categories/{id}', access: 'permission: category.update',
+        summary: 'Update a category. slug is recomputed from name on every update — name is required even on update.', body: 'same fields as create, name still required', response: '200 {"message": "Category updated successfully", "data": {...}}', notes: [] },
+      { method: 'DELETE', path: '/categories/{id}', access: 'permission: category.delete',
+        summary: 'Soft delete — disappears from the API immediately, row is kept.', response: '200 {"message": "Category deleted"}',
+        notes: ['Sub-categories underneath are untouched and keep working (only cascade on an actual hard delete, which the app never does).'] },
+    ],
+  },
+  {
+    id: 'sub-categories', title: 'Sub-Categories', desc: 'Second-level services under a category, e.g. "AC Service" under "Home Repair". Soft-deletable.',
+    endpoints: [
+      { method: 'GET', path: '/sub-categories', access: 'permission: sub-category.view',
+        summary: 'Paginated list, each with category_pricings nested. Optional ?category_id= and ?per_page= filters.', response: '200 OK — same paginator shape as /categories', notes: [] },
+      { method: 'GET', path: '/sub-categories/{id}', access: 'permission: sub-category.view', summary: 'Single sub-category. 404 if missing.', response: '200 {"data": {...}}', notes: [] },
+      { method: 'POST', path: '/sub-categories', access: 'permission: sub-category.create',
+        summary: 'Create a sub-category.',
+        body: [ ['category_id', 'integer', true, 'must be an existing, non-deleted category'], ['title', 'string', true, 'max 255'], ['description', 'string', false, ''], ['status', 'boolean', false, 'default false'] ],
+        response: '201 {"message": "SubCategory created successfully", "data": {...}}', notes: ['422 if category_id doesn\'t exist (or points at a soft-deleted category).'] },
+      { method: 'PUT', path: '/sub-categories/{id}', access: 'permission: sub-category.update', summary: 'Update.', body: 'same fields as create', response: '200 {"message": "SubCategory updated successfully", "data": {...}}', notes: [] },
+      { method: 'DELETE', path: '/sub-categories/{id}', access: 'permission: sub-category.delete', summary: 'Soft delete.', response: '200 {"message": "SubCategory deleted"}', notes: [] },
+    ],
+  },
+  {
+    id: 'price-categories', title: 'Price Categories', desc: 'The actual bookable price points under a sub-category — what a client picks when placing an order. Soft-deletable.',
+    endpoints: [
+      { method: 'GET', path: '/price-categories', access: 'permission: price-category.view',
+        summary: 'Paginated list, each with its parent sub_category nested. Optional ?sub_category_id= and ?per_page= filters.', response: '200 OK — same paginator shape as /categories', notes: [] },
+      { method: 'GET', path: '/price-categories/{id}', access: 'permission: price-category.view', summary: 'Single record. 404 if missing.', response: '200 {"data": {...}}', notes: [] },
+      { method: 'POST', path: '/price-categories', access: 'permission: price-category.create',
+        summary: 'Create a price point.',
+        body: [ ['sub_category_id', 'integer', true, 'must be an existing, non-deleted sub-category'], ['price', 'decimal', true, '>= 0'], ['job_type', 'string', false, 'free text, not an enum'], ['duration', 'string', false, 'free text, e.g. "2 hours"'], ['complexity', 'string', false, 'free text, e.g. "standard"'] ],
+        response: '201 {"message": "Price Category created successfully", "data": {...}}', notes: ['422 if sub_category_id doesn\'t exist, or price is missing/negative.'] },
+      { method: 'PUT', path: '/price-categories/{id}', access: 'permission: price-category.update', summary: 'Update.', body: 'same fields as create', response: '200 {"message": "Price Category updated successfully", "data": {...}}', notes: [] },
+      { method: 'DELETE', path: '/price-categories/{id}', access: 'permission: price-category.delete', summary: 'Soft delete.', response: '200 {"message": "Price Category deleted"}', notes: [] },
+    ],
+  },
+  {
+    id: 'workers', title: 'Workers', desc: 'The people fulfilling orders — admin-managed, matched to orders by category. Soft-deletable.',
+    endpoints: [
+      { method: 'GET', path: '/workers/available', access: 'permission: worker.view',
+        summary: 'Workers with status=available in a given category — use this to populate the "assign worker" picker. Not paginated (deliberately — it\'s a small, bounded picker list).',
+        body: [['category_id', 'integer', true, 'query param, must exist in categories']],
+        response: '200 {"data": [ {worker with sub_category loaded} ]}', notes: [] },
+      { method: 'GET', path: '/workers', access: 'permission: worker.view',
+        summary: 'Paginated list with category + sub_category loaded. Optional ?status=, ?category_id=, ?per_page= filters.',
+        response: '200 OK — same paginator shape as /categories, newest first', notes: [] },
+      { method: 'POST', path: '/workers', access: 'permission: worker.create',
+        summary: 'Add a worker.',
+        body: [
+          ['name', 'string', true, 'max 255'], ['phone', 'string', true, 'max 20'], ['email', 'string', false, 'valid email'],
+          ['category_id', 'integer', true, 'must exist'], ['sub_category_id', 'integer', false, 'must exist if sent'],
+          ['status', 'string', false, 'available | busy | inactive, default available'], ['notes', 'string', false, ''],
+        ],
+        response: '201 {"message": "Worker added successfully", "data": {...}}', notes: [] },
+      { method: 'GET', path: '/workers/{id}', access: 'permission: worker.view',
+        summary: 'Single worker with category, sub_category, and ALL their orders (including cancelled ones) loaded.', response: '', notes: [] },
+      { method: 'PUT', path: '/workers/{id}', access: 'permission: worker.update', summary: 'Update. All fields optional (sometimes).', body: 'same fields as create', response: '200 {"message": "Worker updated successfully", "data": {...}}', notes: [] },
+      { method: 'DELETE', path: '/workers/{id}', access: 'permission: worker.delete',
+        summary: 'Soft delete a worker.', response: '200 {"message": "Worker deleted successfully"}',
+        notes: ['Their existing orders are not touched — worker_id on those orders is set to null, but the worker\'s own record (and name) is preserved, not erased.'] },
+    ],
+  },
+  {
+    id: 'booking-slots', title: 'Booking Slots', desc: 'Time windows a client books into when placing an order. Each slot caps how many orders it can hold.',
+    endpoints: [
+      { method: 'GET', path: '/booking-slots/available', access: 'Auth only',
+        summary: 'Slots for a given date — the client-facing picker.',
+        body: [['date', 'string (query)', true, 'YYYY-MM-DD, today or later'], ['show_booked', 'boolean (query)', false, 'default true; pass false to hide full slots']],
+        response: `200 OK
+{ "date": "2026-07-20", "data": [ { "id": 3, "time_from": "10:00", "time_to": "11:00", "max_bookings": 2, "booked_count": 1, "remaining": 1, "status": "available" } ] }`, notes: [] },
+      { method: 'GET', path: '/booking-slots/calendar', access: 'Auth only',
+        summary: 'Per-day summary over a date range — good for a calendar heat-map view.',
+        body: [['from', 'string (query)', true, 'YYYY-MM-DD'], ['to', 'string (query)', true, 'must be on/after from']],
+        response: `200 OK
+{ "data": [ { "date": "2026-07-20", "total_slots": 4, "available_slots": 1, "status": "available" } ] }`, notes: [] },
+      { method: 'GET', path: '/booking-slots', access: 'role: admin, superadmin',
+        summary: 'Full admin list. Optional ?date= and ?is_active= filters.', response: '200 {"data": [...]}, ordered by date then time_from', notes: [] },
+      { method: 'POST', path: '/booking-slots', access: 'role: admin, superadmin',
+        summary: 'Create a slot.',
+        body: [
+          ['date', 'string', true, 'today or later'], ['time_from', 'string', true, 'HH:mm'], ['time_to', 'string', true, 'HH:mm, after time_from'],
+          ['max_bookings', 'integer', false, '1–20'], ['is_active', 'boolean', false, ''],
+        ],
+        response: '201 {"message": "Slot created successfully", "data": {...}}',
+        notes: ['422 in Urdu if a slot already exists at the same date + time_from (also enforced by a DB unique constraint).'] },
+      { method: 'PUT', path: '/booking-slots/{id}', access: 'role: admin, superadmin', summary: 'Update. All fields optional.', body: 'same fields as create', response: '200 {"message": "Slot updated successfully", "data": {...}}', notes: [] },
+      { method: 'DELETE', path: '/booking-slots/{id}', access: 'role: admin, superadmin',
+        summary: 'Delete a slot.', response: '200 {"message": "Slot deleted successfully"}',
+        notes: ['422 in Urdu if the slot already has orders on it — clear/reassign those orders first.'] },
+    ],
+  },
+  {
+    id: 'orders', title: 'Orders', desc: 'The core object — a client booking a priced service for a time slot.',
+    endpoints: [
+      { method: 'GET', path: '/orders', access: 'permission: order.view', id: 'get-orders',
+        summary: 'Client sees only their own orders; admin/superadmin see everyone\'s. Paginated.',
+        body: [
+          ['per_page', 'integer (query)', false, 'default 20, max 100'], ['page', 'integer (query)', false, ''],
+          ['status', 'string (query)', false, 'pending | assigned | in_progress | completed | cancelled'],
+          ['category_id', 'integer (query)', false, ''],
+          ['client', 'string (query)', false, 'admin/superadmin only — searches client name or email'],
+          ['from', 'string (query)', false, 'admin/superadmin only — YYYY-MM-DD, filters by order created_at'],
+          ['to', 'string (query)', false, 'admin/superadmin only — YYYY-MM-DD'],
+        ],
+        response: `200 OK
+{
+  "current_page": 1, "per_page": 20, "total": 46, "last_page": 3,
+  "data": [ { "id": 12, "status": "pending", "total_amount": "1500.00", "scheduled_at": "...", "client": {...}, "worker": null, "category": {...}, "sub_category": {...}, "price_category": {...} } ],
+  "links": {...}, "first_page_url": "...", "next_page_url": "..."
+}`,
+        notes: ['This is a paginator object, not a flat array — every other list endpoint here returns { "data": [...] } flat. Read total/last_page for pagination UI.'] },
+      { method: 'POST', path: '/orders', access: 'permission: order.create',
+        summary: 'Client places an order. Pick a price_category_id (+ optionally a booking_slot_id); category/sub-category/amount are derived automatically.',
+        body: [
+          ['price_category_id', 'integer', true, 'must exist in price-categories'],
+          ['booking_slot_id', 'integer', false, 'if omitted, scheduled_at is required instead'],
+          ['scheduled_at', 'datetime', false, 'required only if no booking_slot_id; must be in the future'],
+          ['description', 'string', true, ''], ['address', 'string', true, ''],
+          ['latitude', 'decimal', false, ''], ['longitude', 'decimal', false, ''],
+          ['client_notes', 'string', false, ''],
+        ],
+        response: '201 {"message": "Order placed successfully", "data": {...order with category/sub_category/price_category loaded...}}',
+        notes: ['422 if the chosen booking_slot_id is already fully booked.', 'Triggers an in-app notification to all admins, plus a real email to every admin/superadmin.'] },
+      { method: 'GET', path: '/orders/{id}', access: 'permission: order.view',
+        summary: 'Single order with client, worker, category, sub_category, price_category loaded.',
+        response: '', notes: ['403 Unauthorized if a client requests an order that isn\'t theirs.'] },
+      { method: 'POST', path: '/orders/{id}/cancel', access: 'permission: order.cancel',
+        summary: 'Client cancels their own pending order.',
+        response: '200 {"message": "Order cancelled successfully", "data": {...}}',
+        notes: ['422 if the order is not currently pending (already assigned/in-progress/etc. can\'t be self-cancelled this way).', 'Notifies admins in-app.'] },
+      { method: 'POST', path: '/orders/{id}/assign-worker', access: 'permission: order.manage',
+        summary: 'Admin assigns a worker to an order — sets order to assigned and worker to busy.',
+        body: [['worker_id', 'integer', true, 'must exist in workers']],
+        response: '200 {"message": "Worker assigned successfully", "data": {...order with worker, client, category...}}',
+        notes: ['422 if the order is already completed or cancelled.', 'Notifies the client in-app.'] },
+      { method: 'PATCH', path: '/orders/{id}/status', access: 'permission: order.manage',
+        summary: 'Admin moves an order through its lifecycle.',
+        body: [['status', 'string', true, 'in_progress | completed | cancelled'], ['admin_notes', 'string', false, '']],
+        response: '200 {"message": "Order status updated", "data": {...}}',
+        notes: ['422 if already completed or cancelled.', 'Marking completed/cancelled frees the assigned worker back to available.', 'Notifies the client in-app.'] },
+    ],
+  },
+  {
+    id: 'reviews', title: 'Reviews', desc: 'One review per completed order, left by the client who placed it.',
+    endpoints: [
+      { method: 'GET', path: '/reviews', access: 'Auth only',
+        summary: 'All reviews system-wide, paginated — intentionally not scoped to the current user, since reviews are meant to be browsable (e.g. "this worker has 4.5 stars"). Optional filters: ?category_id= ?sub_category_id= ?price_category_id= ?worker_id= ?rating= ?per_page=.',
+        response: '200 OK — same paginator shape as /categories; reviewer relation only exposes {id, name}, never email', notes: [] },
+      { method: 'POST', path: '/reviews', access: 'permission: review.create',
+        summary: 'Leave a review for a completed order you placed.',
+        body: [ ['order_id', 'integer', true, 'must be your own order'], ['rating', 'integer', true, '1–5'], ['comment', 'string', false, 'max 1000 chars'] ],
+        response: '201 {"message": "Review submitted successfully", "data": {...}}',
+        notes: [
+          '403 if the order isn\'t yours.',
+          '422 (Urdu) if the order isn\'t completed yet, or already has a review — one review per order, enforced.',
+          'category/sub_category/price_category/worker are copied from the order automatically — don\'t send them.',
+        ] },
+      { method: 'GET', path: '/reviews/my', access: 'Auth only', summary: 'Paginated reviews left by the current user, each with its order\'s id/status/scheduled_at attached.', response: '200 OK — same paginator shape as /categories', notes: [] },
+      { method: 'GET', path: '/reviews/stats', access: 'Auth only',
+        summary: 'Rating breakdown — pass at most one scope filter.',
+        body: [['category_id | sub_category_id | price_category_id | worker_id', 'integer (query)', false, 'pick one; omit all for site-wide stats']],
+        response: `200 OK
+{ "data": { "total_reviews": 12, "average_rating": 4.3, "five_star": 6, "four_star": 4, "three_star": 1, "two_star": 1, "one_star": 0 } }`,
+        notes: ['average_rating is null when total_reviews is 0.'] },
+      { method: 'GET', path: '/reviews/{id}', access: 'Auth only', summary: 'Single review with full relations loaded.', response: '', notes: [] },
+    ],
+  },
+  {
+    id: 'notifications', title: 'Notifications', desc: 'In-app notifications (order placed, worker assigned, status changed) — scoped to the logged-in user.',
+    endpoints: [
+      { method: 'GET', path: '/notifications', access: 'Auth only',
+        summary: 'The current user\'s notifications, paginated, newest first, plus an unread count. Optional ?per_page=.',
+        response: `200 OK
+{
+  "current_page": 1, "per_page": 20, "total": 8, "last_page": 1,
+  "data": [ { "id": "uuid", "data": { "title": "...", "body": "...", "order_id": 12, "type": "order_placed" }, "read": false, "created_at": "..." } ],
+  "unread_count": 3
+}`, notes: ['unread_count is the total unread count, independent of the current page.'] },
+      { method: 'POST', path: '/notifications/read-all', access: 'Auth only', summary: 'Mark everything read.', response: '200 {"message": "All notifications marked as read"}', notes: [] },
+      { method: 'PATCH', path: '/notifications/{id}/read', access: 'Auth only', summary: 'Mark one notification read.', response: '200 {"message": "Marked as read"}', notes: [] },
+      { method: 'DELETE', path: '/notifications/{id}', access: 'Auth only', summary: 'Delete one notification.', response: '200 {"message": "Notification deleted"}', notes: [] },
+    ],
+  },
+  {
+    id: 'dashboard', title: 'Dashboard', desc: 'Aggregate stats for the admin/superadmin landing page.',
+    endpoints: [
+      { method: 'GET', path: '/dashboard/stats', access: 'role: admin, superadmin',
+        summary: 'Everything for an admin overview screen in one call.',
+        response: `200 OK
+{
+  "overview": { "total_users": 120, "total_workers": 14, "total_orders": 340, "total_revenue": "512000.00" },
+  "orders_by_status": { "pending": 5, "assigned": 3, "in_progress": 2, "completed": 320, "cancelled": 10 },
+  "workers_by_status": { "available": 9, "busy": 4, "inactive": 1 },
+  "revenue": { "today": "4500.00", "this_month": "88000.00", "total": "512000.00" },
+  "recent_orders": [ { "id": 340, "status": "pending", "client": {...}, "worker": {...}, "category": {...} } ],
+  "top_categories": [ { "category_id": 1, "total_orders": 90, "total_revenue": "135000.00", "category": {...} } ]
+}`,
+        notes: ['revenue.today / revenue.this_month are based on when an order was last updated into completed, not when the job actually happened.'] },
+    ],
+  },
+  {
+    id: 'users', title: 'Users', desc: 'List users and change what role they hold — this is how an admin gets made, since /register can only ever create a client.',
+    endpoints: [
+      { method: 'GET', path: '/users', access: 'permission: user.view',
+        summary: 'Paginated list of every user, with roles loaded.',
+        body: [
+          ['search', 'string (query)', false, 'matches name or email'],
+          ['role', 'string (query)', false, 'filter to one role, e.g. client'],
+          ['per_page', 'integer (query)', false, 'default 20, max 100'],
+        ],
+        response: `200 OK
+{
+  "current_page": 1, "per_page": 20, "total": 42, "last_page": 3,
+  "data": [ { "id": 11, "name": "Ali Raza", "email": "ali@example.com", "roles": [ { "id": 3, "name": "client" } ] } ]
+}`, notes: [] },
+      { method: 'PATCH', path: '/users/{id}/role', access: 'permission: user.assign-role', id: 'patch-user-role',
+        summary: 'Replace a user\'s role with a new one — this is the only way to turn a client into an admin.',
+        body: [['role', 'string', true, 'must be an existing role name: client, admin, or superadmin']],
+        response: `200 OK
+{ "message": "Role updated successfully", "data": { "id": 11, "name": "Ali Raza", "email": "ali@example.com", "roles": ["admin"] } }`,
+        notes: [
+          '403 {"message": "Only a superadmin can grant the superadmin role"} if an admin (not superadmin) tries to set role: "superadmin" — privilege escalation is blocked server-side, not just hidden in the UI.',
+          'This replaces the user\'s role entirely (a user holds exactly one of client/admin/superadmin at a time) — it does not add a second role alongside the first.',
+        ] },
+    ],
+  },
+  {
+    id: 'roles', title: 'Roles & Permissions', desc: 'Superadmin-only tooling to manage what each role can do. Not needed for most frontend screens — only for a settings/admin-management panel.',
+    endpoints: [
+      { method: 'GET', path: '/permissions', access: 'permission: role.view', summary: 'List every permission that exists in the system.', response: '200 {"data": [ {"id":1,"name":"order.create","guard_name":"web"} ]}', notes: [] },
+      { method: 'GET', path: '/roles', access: 'permission: role.view', summary: 'List roles with their permissions loaded.', response: '200 {"data": [ {"id":1,"name":"client","permissions":[...]} ]}', notes: [] },
+      { method: 'POST', path: '/roles', access: 'permission: role.create',
+        summary: 'Create a new role.', body: [['name', 'string', true, 'unique'], ['permissions', 'string[]', false, 'array of permission names']],
+        response: '201 {"message": "Role created successfully", "data": {...}}', notes: [] },
+      { method: 'GET', path: '/roles/{id}', access: 'permission: role.view', summary: 'Single role with permissions.', response: '', notes: [] },
+      { method: 'PUT', path: '/roles/{id}', access: 'permission: role.update', summary: 'Rename a role.', body: [['name', 'string', true, 'unique']], response: '200 {"message": "Role updated successfully", "data": {...}}', notes: [] },
+      { method: 'DELETE', path: '/roles/{id}', access: 'permission: role.delete',
+        summary: 'Delete a custom role.', response: '200 {"message": "Role deleted successfully"}',
+        notes: ['403 if you try to delete client, admin, or superadmin — those three are protected.'] },
+      { method: 'POST', path: '/roles/{id}/sync-permissions', access: 'permission: role.sync-permissions',
+        summary: 'Replace a role\'s entire permission set in one call.', body: [['permissions', 'string[]', true, 'the full replacement list — omitted permissions are removed']],
+        response: '200 {"message": "Permissions synced successfully", "data": {...}}', notes: [] },
+    ],
+  },
+];
+
+const METHOD_ORDER = { GET: 0, POST: 1, PUT: 2, PATCH: 3, DELETE: 4 };
+
+function slugFor(group, ep, i) {
+  return ep.id || (ep.method + '-' + group.id + '-' + i).toLowerCase();
+}
+
+function renderFields(rows) {
+  if (!rows) return '';
+  if (typeof rows === 'string') return `<p style="font-size:13px;color:var(--muted);margin:4px 0 0;">${rows}</p>`;
+  const trs = rows.map(([name, type, required, note]) => `
+    <tr>
+      <td class="fname">${name}</td>
+      <td class="ftype">${type}</td>
+      <td class="${required ? 'req' : 'opt'}">${required ? 'required' : 'optional'}</td>
+      <td>${note || ''}</td>
+    </tr>`).join('');
+  return `<table class="fields"><tr><th>Field</th><th>Type</th><th></th><th>Notes</th></tr>${trs}</table>`;
+}
+
+function renderEndpoint(group, ep, i) {
+  const id = slugFor(group, ep, i);
+  const notes = (ep.notes || []).map(n => `<li${/^(?:422|403|no server|no db)/i.test(n) ? ' class="warn"' : ''}>${n}</li>`).join('');
+  return `
+  <div class="endpoint" id="${id}">
+    <div class="endpoint-head">
+      <span class="method ${ep.method.toLowerCase()}">${ep.method}</span>
+      <span class="path">${ep.path}</span>
+      <span class="access">${ep.access}</span>
+    </div>
+    <p class="summary">${ep.summary}</p>
+    ${ep.body ? `<h4>Request</h4>${renderFields(ep.body)}` : ''}
+    ${ep.response ? `<h4>Response</h4><pre><code>${ep.response.replace(/</g, '&lt;')}</code></pre>` : ''}
+    ${notes ? `<h4>Notes</h4><ul class="notes">${notes}</ul>` : ''}
+  </div>`;
+}
+
+function renderGroup(group) {
+  const eps = group.endpoints
+    .slice()
+    .sort((a, b) => (METHOD_ORDER[a.method] ?? 9) - (METHOD_ORDER[b.method] ?? 9))
+    .map((ep, i) => renderEndpoint(group, ep, i)).join('');
+  return `
+  <section class="group" id="${group.id}">
+    <h2>${group.title}</h2>
+    <p class="group-desc">${group.desc}</p>
+    ${eps}
+  </section>`;
+}
+
+function renderNav() {
+  return API.map(group => {
+    const links = group.endpoints.map((ep, i) => {
+      const id = slugFor(group, ep, i);
+      return `<a href="#${id}"><span class="m method ${ep.method.toLowerCase()}">${ep.method}</span>${ep.path}</a>`;
+    }).join('');
+    return `<div class="group-title">${group.title}</div>${links}`;
+  }).join('');
+}
+
+document.getElementById('content').innerHTML = API.map(renderGroup).join('');
+document.getElementById('sideNav').innerHTML = renderNav();
+</script>
+</body>
+</html>

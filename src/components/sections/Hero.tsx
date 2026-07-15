@@ -105,9 +105,7 @@ export default function Hero() {
               return (
                 <Link
                   key={category.slug}
-                  href={`/${locale}/workers?category=${encodeURIComponent(
-                    category.label.toLowerCase(),
-                  )}`}
+                  href={`/${locale}/services`}
                   className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)] sm:px-4 sm:py-2.5 sm:text-sm"
                 >
                   <Icon

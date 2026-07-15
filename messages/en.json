@@ -19,9 +19,7 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "links": {
-      "browseWorkers": "Browse Workers",
       "services": "Services",
-      "postJob": "Post a Job",
       "howItWorks": "How It Works",
       "cities": "Cities",
       "home": "Home"
@@ -29,7 +27,6 @@
     "menu": {
       "profile": "My Profile",
       "bookings": "My Bookings",
-      "savedWorkers": "Saved Workers",
       "settings": "Settings",
       "logout": "Logout"
     }
@@ -88,6 +85,7 @@
       "phone": "Phone Number",
       "location": "Location",
       "city": "City",
+      "address": "Address",
       "password": "Password",
       "confirmPassword": "Confirm Password"
     },
@@ -95,6 +93,7 @@
       "name": "Enter your full name",
       "email": "you@example.com",
       "phone": "3001234567",
+      "address": "House #, street, area",
       "password": "Create a password",
       "confirmPassword": "Confirm your password"
     },
@@ -128,6 +127,7 @@
       "email": "Enter a valid email address.",
       "phone": "Enter 10 digits starting with 3.",
       "city": "Select your city.",
+      "address": "Enter your address (at least 5 characters).",
       "password": "Password must be at least 8 characters.",
       "confirmPassword": "Passwords must match.",
       "terms": "Please accept the terms and privacy policy.",

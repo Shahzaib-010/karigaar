@@ -3,7 +3,6 @@
 import {
   IconChevronDown,
   IconClipboardList,
-  IconHeart,
   IconLogout,
   IconMenu2,
   IconSettings,
@@ -19,15 +18,12 @@ import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { label: "home", href: "/" },
-  { label: "browseWorkers", href: "workers" },
   { label: "services", href: "services" },
-  { label: "postJob", href: "post-a-job" },
 ] as const;
 
 const menuItems = [
   { label: "profile", icon: IconUser, href: "profile" },
   { label: "bookings", icon: IconClipboardList, href: "bookings" },
-  { label: "savedWorkers", icon: IconHeart, href: "saved-workers" },
   { label: "settings", icon: IconSettings, href: "settings" },
 ] as const;
 
@@ -277,8 +273,8 @@ export default function Navbar() {
                   <p className="text-base font-bold text-foreground">
                     {user.name}
                   </p>
-                  <p className="text-sm font-semibold text-muted-foreground">
-                    {user.role}
+                  <p className="text-sm font-semibold capitalize text-muted-foreground">
+                    {user.roles?.[0]}
                   </p>
                 </div>
               </div>

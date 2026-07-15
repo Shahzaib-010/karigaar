@@ -14,12 +14,12 @@ import { Input } from "@/components/ui/input";
 import OTPInput from "@/src/components/ui/OTPInput";
 import {
   ApiError,
-  fetchCurrentUser,
   loginRequest,
   registerUser,
   resendOtp,
   verifyOtp,
 } from "@/src/lib/api";
+import { resolveRedirectPath } from "@/src/lib/permissions";
 
 type SignupStep = "details" | "otp";
 type ResendState = "idle" | "sending" | "sent";
@@ -43,6 +43,7 @@ type PendingAccount = {
   email: string;
   password: string;
   phone: string;
+  address: string;
   city: string;
 };
 
@@ -69,6 +70,7 @@ export default function SignupPage() {
       password: z.string().min(8, t("errors.password")),
       confirmPassword: z.string(),
       phone: z.string().regex(/^3\d{9}$/, t("errors.phone")),
+      address: z.string().min(5, t("errors.address")),
       city: z.enum(cities, { error: t("errors.city") }),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -91,6 +93,7 @@ export default function SignupPage() {
       password: "",
       confirmPassword: "",
       phone: "",
+      address: "",
       city: "lahore",
     },
   });
@@ -101,12 +104,17 @@ export default function SignupPage() {
 
     const email = values.email.trim().toLowerCase();
 
+    const phoneNumber = `+92${values.phone}`;
+    const address = `${values.address.trim()}, ${values.city}`;
+
     try {
       await registerUser({
         name: values.name.trim(),
         email,
         password: values.password,
         password_confirmation: values.confirmPassword,
+        phone_number: phoneNumber,
+        address,
       });
 
       setPending({
@@ -114,6 +122,7 @@ export default function SignupPage() {
         email,
         password: values.password,
         phone: values.phone,
+        address: values.address.trim(),
         city: values.city,
       });
       setOtpCode("");
@@ -144,25 +153,16 @@ export default function SignupPage() {
     setOtpError("");
 
     try {
-      await verifyOtp({ email: pending.email, otp: Number(otpCode) });
+      await verifyOtp({ email: pending.email, otp: otpCode });
 
       // verify-otp does not return a token, so log in with the stored password.
-      const { access_token } = await loginRequest({
+      const { access_token, user, redirect_to } = await loginRequest({
         email: pending.email,
         password: pending.password,
       });
-      const apiUser = await fetchCurrentUser(access_token);
 
-      login(
-        {
-          ...apiUser,
-          role: "customer",
-          phone: `0${pending.phone}`,
-          city: pending.city,
-        },
-        access_token,
-      );
-      router.push(`/${locale}`);
+      login({ ...user, city: pending.city }, access_token);
+      router.push(resolveRedirectPath(redirect_to, locale));
     } catch (error) {
       setOtpError(error instanceof ApiError ? error.message : t("otp.incorrect"));
     } finally {
@@ -293,6 +293,19 @@ export default function SignupPage() {
                         </Field>
                       )}
                     />
+
+                    <Field
+                      label={t("fields.address")}
+                      error={detailsErrors.address?.message}
+                    >
+                      <Input
+                        placeholder={t("placeholders.address")}
+                        autoComplete="street-address"
+                        aria-invalid={Boolean(detailsErrors.address)}
+                        className="h-11 bg-white"
+                        {...registerDetails("address")}
+                      />
+                    </Field>
 
                     <Field
                       label={t("fields.location")}

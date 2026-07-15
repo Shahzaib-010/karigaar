@@ -34,7 +34,7 @@ export default function DualCta() {
             </div>
 
             <Link
-              href={`/${locale}/workers`}
+              href={`/${locale}/services`}
               className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[var(--primary)] px-6 text-base font-bold text-white shadow-sm transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_88%,black)] sm:w-fit"
             >
               <Search className="size-4" strokeWidth={2} aria-hidden />
