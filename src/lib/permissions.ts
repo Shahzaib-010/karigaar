@@ -9,8 +9,8 @@ import type { RoleName } from "@/src/lib/api";
  *
  * The API returns "/dashboard" (client), "/admin/dashboard" (admin) or
  * "/superadmin/dashboard" (superadmin). We run a single admin panel, so admin
- * AND superadmin both land on /admin/dashboard; clients go to the site home
- * for now (the client area isn't built yet). All paths are locale-prefixed.
+ * AND superadmin both land on /admin/dashboard; clients land on the services
+ * page to browse and book. All paths are locale-prefixed.
  */
 export function resolveRedirectPath(
   redirectTo: string | null | undefined,
@@ -20,7 +20,7 @@ export function resolveRedirectPath(
   if (target.includes("admin")) {
     return `/${locale}/admin/dashboard`;
   }
-  return `/${locale}`;
+  return `/${locale}/services`;
 }
 
 /** Convenience wrapper over useAuth for permission/role checks in the UI. */

@@ -330,6 +330,97 @@ export interface PriceCategoryInput {
   complexity?: string;
 }
 
+// ---- Roles, Permissions & Users -------------------------------------------
+
+export interface Permission {
+  id: number;
+  name: string;
+  guard_name?: string;
+}
+
+export interface Role {
+  id: number;
+  name: string;
+  permissions?: Permission[];
+}
+
+export interface RoleInput {
+  name: string;
+  permissions?: string[];
+}
+
+/** Roles that the backend refuses to rename/delete. */
+export const PROTECTED_ROLES = ["client", "admin", "superadmin"] as const;
+
+export interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  /** Backend may return role names as strings or { name } objects. */
+  roles?: Array<string | { name: string }>;
+  created_at?: string | null;
+}
+
+// ---- Client booking -------------------------------------------------------
+
+/** A slot from GET /booking-slots/available (client picker). */
+export interface AvailableSlot {
+  id: number;
+  time_from: string;
+  time_to: string;
+  max_bookings: number;
+  booked_count: number;
+  remaining: number;
+  status: string;
+}
+
+export interface CreateOrderInput {
+  price_category_id: number;
+  booking_slot_id?: number;
+  scheduled_at?: string;
+  description: string;
+  address: string;
+  latitude?: number;
+  longitude?: number;
+  client_notes?: string;
+}
+
+// ---- Notifications --------------------------------------------------------
+
+export interface AppNotification {
+  id: string;
+  data: {
+    title?: string;
+    body?: string;
+    order_id?: number;
+    type?: string;
+  };
+  read: boolean;
+  created_at?: string | null;
+}
+
+export interface NotificationsResponse {
+  data: AppNotification[];
+  unread_count: number;
+}
+
+// ---- Reviews --------------------------------------------------------------
+
+export interface Review {
+  id: number;
+  rating: number;
+  comment?: string | null;
+  order_id?: number;
+  order?: { id: number; status?: string; scheduled_at?: string | null } | null;
+  created_at?: string | null;
+}
+
+export interface ReviewInput {
+  order_id: number;
+  rating: number;
+  comment?: string;
+}
+
 // ---- Booking Slots --------------------------------------------------------
 
 export interface BookingSlot {

@@ -3,14 +3,14 @@
 import { useLocale } from "next-intl";
 
 import ClientGuard from "@/src/components/site/ClientGuard";
-import ServicesBrowse from "@/src/components/site/ServicesBrowse";
+import ProfileView from "@/src/components/site/ProfileView";
 
-export default function ServicesPage() {
+export default function ProfilePage() {
   const locale = useLocale();
 
   return (
     <ClientGuard locale={locale}>
-      <ServicesBrowse locale={locale} />
+      <ProfileView locale={locale} />
     </ClientGuard>
   );
 }

@@ -1,14 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import { adminApi } from "@/src/store/adminApi";
+import { clientApi } from "@/src/store/clientApi";
 
 export const makeStore = () =>
   configureStore({
     reducer: {
       [adminApi.reducerPath]: adminApi.reducer,
+      [clientApi.reducerPath]: clientApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(adminApi.middleware),
+      getDefaultMiddleware().concat(adminApi.middleware, clientApi.middleware),
   });
 
 export type AppStore = ReturnType<typeof makeStore>;

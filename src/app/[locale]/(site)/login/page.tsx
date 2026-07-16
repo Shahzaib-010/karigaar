@@ -49,7 +49,15 @@ export default function LoginPage() {
       const { access_token, user, redirect_to } = await loginRequest(values);
 
       login(user, access_token);
-      router.push(resolveRedirectPath(redirect_to, locale));
+
+      // Honor a ?next= return path (set by ClientGuard) when it's a safe
+      // internal path; otherwise fall back to the role-based destination.
+      const next = new URLSearchParams(window.location.search).get("next");
+      const dest =
+        next && next.startsWith("/")
+          ? next
+          : resolveRedirectPath(redirect_to, locale);
+      router.push(dest);
     } catch (error) {
       setSubmitError(
         error instanceof ApiError

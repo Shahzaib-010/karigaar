@@ -3,14 +3,14 @@
 import { useLocale } from "next-intl";
 
 import ClientGuard from "@/src/components/site/ClientGuard";
-import ServicesBrowse from "@/src/components/site/ServicesBrowse";
+import MyBookings from "@/src/components/site/MyBookings";
 
-export default function ServicesPage() {
+export default function BookingsPage() {
   const locale = useLocale();
 
   return (
     <ClientGuard locale={locale}>
-      <ServicesBrowse locale={locale} />
+      <MyBookings locale={locale} />
     </ClientGuard>
   );
 }

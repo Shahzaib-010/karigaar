@@ -5,7 +5,6 @@ import {
   IconClipboardList,
   IconLogout,
   IconMenu2,
-  IconSettings,
   IconUser,
   IconX,
 } from "@tabler/icons-react";
@@ -15,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import NotificationsBell from "@/src/components/site/NotificationsBell";
 
 const navLinks = [
   { label: "home", href: "/" },
@@ -24,7 +24,6 @@ const navLinks = [
 const menuItems = [
   { label: "profile", icon: IconUser, href: "profile" },
   { label: "bookings", icon: IconClipboardList, href: "bookings" },
-  { label: "settings", icon: IconSettings, href: "settings" },
 ] as const;
 
 function getInitials(name: string) {
@@ -142,6 +141,16 @@ export default function Navbar() {
           </div>
 
           {isAuthenticated && user ? (
+            <>
+            <div className="hidden md:block">
+              <NotificationsBell />
+            </div>
+            <Link
+              href={withLocale("services")}
+              className="hidden rounded-lg border border-primary bg-primary px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-dark md:inline-flex"
+            >
+              {t("bookNow")}
+            </Link>
             <div ref={profileRef} className="relative hidden md:block">
               <button
                 type="button"
@@ -190,6 +199,7 @@ export default function Navbar() {
                 </div>
               ) : null}
             </div>
+            </>
           ) : (
             <div className="hidden items-center gap-2 md:flex">
               <Link
@@ -278,6 +288,13 @@ export default function Navbar() {
                   </p>
                 </div>
               </div>
+              <Link
+                href={withLocale("services")}
+                onClick={() => setIsMenuOpen(false)}
+                className="mb-3 flex w-full items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-bold text-white"
+              >
+                {t("bookNow")}
+              </Link>
               <button
                 type="button"
                 onClick={handleLogout}

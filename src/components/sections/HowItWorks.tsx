@@ -5,22 +5,22 @@ import { ArrowRight } from "lucide-react";
 
 const steps = [
   {
-    title: "Search",
-    body: "Type what you need or tap a category. See nearby verified workers with ratings and reviews — all in one place.",
+    title: "Pick a service",
+    body: "Choose the service you need, pick a time that suits you, and share your address. Booking takes under a minute.",
     className: "bg-[var(--primary)] text-white",
     mutedClassName: "text-white/78",
     arrowClassName: "text-white",
   },
   {
-    title: "Book",
-    body: "Choose your worker, pick a time, and share your address. Your booking is confirmed in under a minute.",
+    title: "We assign a pro",
+    body: "We review your booking and assign a trained, verified professional from our team for the job.",
     className: "bg-[#dff8ed] text-[var(--primary)]",
     mutedClassName: "text-[#315f55]",
     arrowClassName: "text-[var(--primary)]",
   },
   {
-    title: "Done",
-    body: "Your worker arrives, gets the job done right. Rate them after — and your next booking gets even easier.",
+    title: "Job done",
+    body: "Your professional arrives and gets it done right. Rate the service once it's complete.",
     className: "bg-[#06241f] text-white",
     mutedClassName: "text-white/72",
     arrowClassName: "text-white",
@@ -36,9 +36,9 @@ export default function HowItWorks() {
         eyebrow: "طریقہ کار",
         title: "3 آسان مراحل",
         steps: [
-          { title: "تلاش کریں", body: "اپنی ضرورت لکھیں یا کسی زمرے پر ٹیپ کریں۔ قریب موجود تصدیق شدہ کاریگر، ریٹنگ اور ریویوز کے ساتھ ایک ہی جگہ دیکھیں۔" },
-          { title: "بک کریں", body: "اپنے کاریگر کو چنیں، وقت منتخب کریں اور اپنا پتہ شیئر کریں۔ آپ کی بکنگ ایک منٹ سے بھی کم میں کنفرم ہو جاتی ہے۔" },
-          { title: "مکمل", body: "کاریگر آتا ہے، کام ٹھیک طریقے سے کرتا ہے۔ بعد میں ریٹنگ دیں تاکہ اگلی بکنگ اور بھی آسان ہو جائے۔" },
+          { title: "خدمت منتخب کریں", body: "جو خدمت درکار ہو منتخب کریں، اپنی پسند کا وقت چنیں اور اپنا پتہ شیئر کریں۔ بکنگ میں ایک منٹ سے بھی کم لگتا ہے۔" },
+          { title: "ہم ماہر مقرر کرتے ہیں", body: "ہم آپ کی بکنگ کا جائزہ لے کر اپنی ٹیم سے ایک تربیت یافتہ، تصدیق شدہ ماہر مقرر کرتے ہیں۔" },
+          { title: "کام مکمل", body: "ماہر آتا ہے اور کام درست طریقے سے مکمل کرتا ہے۔ مکمل ہونے پر خدمت کو ریٹنگ دیں۔" },
         ],
       }
     : null;

@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 
 import type {
+  AdminUser,
   BookingSlot,
   BookingSlotInput,
   BookingSlotsQuery,
@@ -10,8 +11,11 @@ import type {
   Order,
   OrdersQuery,
   Paginated,
+  Permission,
   PriceCategory,
   PriceCategoryInput,
+  Role,
+  RoleInput,
   SubCategory,
   SubCategoryInput,
   Worker,
@@ -48,6 +52,8 @@ export const adminApi = createApi({
     "PriceCategory",
     "Slot",
     "Role",
+    "Permission",
+    "User",
   ],
   endpoints: (builder) => ({
     getDashboardStats: builder.query<DashboardStats, void>({
@@ -298,6 +304,62 @@ export const adminApi = createApi({
       query: (id) => ({ url: `/booking-slots/${id}`, method: "DELETE" }),
       invalidatesTags: [{ type: "Slot", id: "LIST" }],
     }),
+
+    // ─── Roles & Permissions (superadmin) ───────────────────────────
+    getRoles: builder.query<Role[], void>({
+      query: () => ({ url: "/roles" }),
+      transformResponse: (res: unknown) => pickData<Role[]>(res),
+      providesTags: ["Role"],
+    }),
+    getPermissions: builder.query<Permission[], void>({
+      query: () => ({ url: "/permissions" }),
+      transformResponse: (res: unknown) => pickData<Permission[]>(res),
+      providesTags: ["Permission"],
+    }),
+    createRole: builder.mutation<unknown, RoleInput>({
+      query: (body) => ({ url: "/roles", method: "POST", body }),
+      invalidatesTags: ["Role"],
+    }),
+    updateRole: builder.mutation<unknown, { id: number; name: string }>({
+      query: ({ id, name }) => ({
+        url: `/roles/${id}`,
+        method: "PUT",
+        body: { name },
+      }),
+      invalidatesTags: ["Role"],
+    }),
+    deleteRole: builder.mutation<unknown, number>({
+      query: (id) => ({ url: `/roles/${id}`, method: "DELETE" }),
+      invalidatesTags: ["Role"],
+    }),
+    syncRolePermissions: builder.mutation<
+      unknown,
+      { id: number; permissions: string[] }
+    >({
+      query: ({ id, permissions }) => ({
+        url: `/roles/${id}/sync-permissions`,
+        method: "POST",
+        body: { permissions },
+      }),
+      invalidatesTags: ["Role"],
+    }),
+
+    // ─── Users (role assignment) ────────────────────────────────────
+    // GET /users shape isn't documented; pickData handles both a flat
+    // { data: [...] } and a paginator (returns its .data array).
+    getUsers: builder.query<AdminUser[], void>({
+      query: () => ({ url: "/users" }),
+      transformResponse: (res: unknown) => pickData<AdminUser[]>(res),
+      providesTags: ["User"],
+    }),
+    updateUserRole: builder.mutation<unknown, { id: number; role: string }>({
+      query: ({ id, role }) => ({
+        url: `/users/${id}/role`,
+        method: "PATCH",
+        body: { role },
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -328,4 +390,12 @@ export const {
   useCreatePriceCategoryMutation,
   useUpdatePriceCategoryMutation,
   useDeletePriceCategoryMutation,
+  useGetRolesQuery,
+  useGetPermissionsQuery,
+  useCreateRoleMutation,
+  useUpdateRoleMutation,
+  useDeleteRoleMutation,
+  useSyncRolePermissionsMutation,
+  useGetUsersQuery,
+  useUpdateUserRoleMutation,
 } = adminApi;

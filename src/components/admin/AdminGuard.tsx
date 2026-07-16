@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2Icon } from "lucide-react";
 
@@ -25,15 +25,17 @@ export default function AdminGuard({
   const router = useRouter();
 
   const allowed = isAuthenticated && isAdmin;
+  const redirectedRef = useRef(false);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || allowed || redirectedRef.current) return;
+    redirectedRef.current = true;
     if (!isAuthenticated) {
       router.replace(`/${locale}/login`);
-    } else if (!isAdmin) {
+    } else {
       router.replace(`/${locale}`);
     }
-  }, [isLoading, isAuthenticated, isAdmin, locale, router]);
+  }, [isLoading, isAuthenticated, isAdmin, allowed, locale, router]);
 
   if (isLoading || !allowed) {
     return (

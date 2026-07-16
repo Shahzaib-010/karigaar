@@ -105,7 +105,7 @@ export default function BrowseByTrade() {
             return (
               <Link
                 key={category.slug}
-                href={`/${locale}/services/${category.slug}`}
+                href={`/${locale}/services`}
                 className={className}
               >
                 {content}

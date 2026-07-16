@@ -8,6 +8,7 @@ import {
   LayoutDashboardIcon,
   LayoutGridIcon,
   ShieldCheckIcon,
+  UserCogIcon,
   UsersIcon,
   type LucideIcon,
 } from "lucide-react";
@@ -57,6 +58,12 @@ const NAV: NavItem[] = [
     icon: LayoutGridIcon,
     href: "/catalog",
     show: (p) => p.can("category.view"),
+  },
+  {
+    title: "Users",
+    icon: UserCogIcon,
+    href: "/users",
+    show: (p) => p.can("user.view"),
   },
   {
     title: "Roles & Permissions",
