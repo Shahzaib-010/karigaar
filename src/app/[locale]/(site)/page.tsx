@@ -2,7 +2,7 @@ import BrowseByTrade from "@/src/components/sections/BrowseByTrade";
 import DualCta from "@/src/components/sections/DualCta";
 import Hero from "@/src/components/sections/Hero";
 import HowItWorks from "@/src/components/sections/HowItWorks";
-import Testimonials from "@/src/components/sections/Testimonials";
+import WhyKarigaar from "@/src/components/sections/WhyKarigaar";
 
 export default function Home() {
   return (
@@ -10,8 +10,8 @@ export default function Home() {
       <Hero />
       <HowItWorks />
       <BrowseByTrade />
+      <WhyKarigaar />
       <DualCta />
-      <Testimonials />
     </main>
   );
 }

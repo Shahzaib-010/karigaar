@@ -8,6 +8,7 @@ import type {
   Category,
   CategoryInput,
   DashboardStats,
+  NotificationsResponse,
   Order,
   OrdersQuery,
   Paginated,
@@ -57,6 +58,7 @@ export const adminApi = createApi({
     "Role",
     "Permission",
     "User",
+    "Notification",
   ],
   endpoints: (builder) => ({
     getDashboardStats: builder.query<DashboardStats, void>({
@@ -363,6 +365,26 @@ export const adminApi = createApi({
       }),
       invalidatesTags: ["User"],
     }),
+
+    // ─── Notifications (admin's own; backend notifies admins on order events) ──
+    // Same /notifications routes as the client — the server scopes them to the
+    // logged-in user, so an admin sees admin-relevant notifications here.
+    getNotifications: builder.query<NotificationsResponse, void>({
+      query: () => ({ url: "/notifications" }),
+      providesTags: ["Notification"],
+    }),
+    markAllNotificationsRead: builder.mutation<unknown, void>({
+      query: () => ({ url: "/notifications/read-all", method: "POST" }),
+      invalidatesTags: ["Notification"],
+    }),
+    markNotificationRead: builder.mutation<unknown, string>({
+      query: (id) => ({ url: `/notifications/${id}/read`, method: "PATCH" }),
+      invalidatesTags: ["Notification"],
+    }),
+    deleteNotification: builder.mutation<unknown, string>({
+      query: (id) => ({ url: `/notifications/${id}`, method: "DELETE" }),
+      invalidatesTags: ["Notification"],
+    }),
   }),
 });
 
@@ -401,4 +423,8 @@ export const {
   useSyncRolePermissionsMutation,
   useGetUsersQuery,
   useUpdateUserRoleMutation,
+  useGetNotificationsQuery,
+  useMarkAllNotificationsReadMutation,
+  useMarkNotificationReadMutation,
+  useDeleteNotificationMutation,
 } = adminApi;

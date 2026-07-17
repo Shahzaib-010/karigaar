@@ -1,12 +1,13 @@
 "use client";
 
-import { BellIcon, SearchIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
 import { usePermissions } from "@/src/lib/permissions";
+import AdminNotificationsBell from "@/src/components/admin/AdminNotificationsBell";
 
 export default function AdminTopbar() {
   const { user } = useAuth();
@@ -35,14 +36,7 @@ export default function AdminTopbar() {
         </label>
 
         <div className="ml-auto flex items-center gap-1.5">
-          <button
-            type="button"
-            aria-label="Notifications"
-            className="relative flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted"
-          >
-            <BellIcon className="size-4.5" />
-            <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-primary" />
-          </button>
+          <AdminNotificationsBell />
 
           {user ? (
             <div className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 transition-colors hover:bg-muted">

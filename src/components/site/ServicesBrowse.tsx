@@ -1,23 +1,16 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import {
   ArrowLeftIcon,
   ArrowRight,
   ChevronRightIcon,
   ClockIcon,
-  DropletsIcon,
   GaugeIcon,
-  HammerIcon,
-  LeafIcon,
-  PaintRollerIcon,
-  PlugIcon,
   RefreshCwIcon,
-  SparklesIcon,
-  WindIcon,
-  WrenchIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -26,35 +19,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 import { formatPkr, toNumber } from "@/src/lib/format";
+import { categoryColor, categoryIcon } from "@/src/lib/categoryVisuals";
 import { cn } from "@/lib/utils";
 import type { Category, SubCategory } from "@/src/lib/api";
 import type { AppQueryError } from "@/src/store/baseQuery";
 import { useGetCatalogQuery } from "@/src/store/clientApi";
 
 const active = (status?: boolean) => status !== false;
-
-// Decorative-only: no icon/colour field on categories, so we cycle a curated set
-// by index purely for visual variety.
-const CAT_ICONS: LucideIcon[] = [
-  WrenchIcon,
-  PlugIcon,
-  PaintRollerIcon,
-  DropletsIcon,
-  SparklesIcon,
-  LeafIcon,
-  WindIcon,
-  HammerIcon,
-];
-const CAT_COLORS = [
-  "#096C44",
-  "#0EA5E9",
-  "#8B5CF6",
-  "#F59E0B",
-  "#F43F5E",
-  "#14B8A6",
-  "#6366F1",
-  "#0F766E",
-];
 
 const minPlanPrice = (sub: SubCategory) =>
   Math.min(...(sub.category_pricings ?? []).map((p) => toNumber(p.price)));
@@ -70,6 +41,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function ServicesBrowse({ locale }: { locale: string }) {
   const { isAuthenticated } = useAuth();
+  const searchParams = useSearchParams();
   const { data, isLoading, isFetching, isError, error, refetch } =
     useGetCatalogQuery();
 
@@ -97,6 +69,20 @@ export default function ServicesBrowse({ locale }: { locale: string }) {
         .filter((c) => c.sub_categories.length > 0),
     [data],
   );
+
+  // Deep link from the landing page (?category=<id>): preselect that category
+  // once, after the catalog loads. A ref makes it fire only on first arrival so
+  // it never fights the user's own back-navigation.
+  const deepLinkApplied = useRef(false);
+  useEffect(() => {
+    if (deepLinkApplied.current || categories.length === 0) return;
+    const raw = searchParams.get("category");
+    if (raw) {
+      const id = Number(raw);
+      if (categories.some((c) => c.id === id)) setCatId(id);
+    }
+    deepLinkApplied.current = true;
+  }, [searchParams, categories]);
 
   const category = catId != null ? categories.find((c) => c.id === catId) ?? null : null;
   const sub =
@@ -205,8 +191,8 @@ export default function ServicesBrowse({ locale }: { locale: string }) {
                 <ViewShell key="cats">
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {categories.map((cat, i) => {
-                      const Icon = CAT_ICONS[i % CAT_ICONS.length];
-                      const color = CAT_COLORS[i % CAT_COLORS.length];
+                      const Icon = categoryIcon(cat.name, i);
+                      const color = categoryColor(i);
                       return (
                         <DrillCard
                           key={cat.id}
@@ -242,8 +228,8 @@ export default function ServicesBrowse({ locale }: { locale: string }) {
                   />
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {category.sub_categories.map((s, i) => {
-                      const Icon = CAT_ICONS[(i + 2) % CAT_ICONS.length];
-                      const color = CAT_COLORS[(i + 2) % CAT_COLORS.length];
+                      const Icon = categoryIcon(s.title, i);
+                      const color = categoryColor(i);
                       const plans = s.category_pricings ?? [];
                       return (
                         <DrillCard

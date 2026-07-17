@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const l=require\\('lucide-react'\\); ['ShieldCheckIcon','BanknoteIcon','CalendarClockIcon','StarIcon','ThumbsUpIcon','ClockIcon','BadgeCheckIcon'].forEach\\(n=>console.log\\(n, typeof l[n]\\)\\)\")"
+    ]
+  }
+}

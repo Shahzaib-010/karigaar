@@ -35,6 +35,18 @@ type ApiFetchOptions = {
   signal?: AbortSignal;
 };
 
+/**
+ * App locale for the Accept-Language header. Reads the first path segment
+ * (/en/…, /ur/…) client-side; defaults to English everywhere else (SSR, or an
+ * unrecognized segment), so server text is English unless the user is on an
+ * Urdu route.
+ */
+function currentLocale(): "en" | "ur" {
+  if (typeof window === "undefined") return "en";
+  const seg = window.location.pathname.split("/")[1];
+  return seg === "ur" ? "ur" : "en";
+}
+
 export async function apiFetch<T = unknown>(
   path: string,
   options: ApiFetchOptions = {},
@@ -42,6 +54,9 @@ export async function apiFetch<T = unknown>(
   const { method = "GET", body, token, signal } = options;
 
   const headers: Record<string, string> = { Accept: "application/json" };
+  // Localize server-generated text (messages, notifications) to the app locale,
+  // defaulting to English. The backend defaults to Urdu without this header.
+  headers["Accept-Language"] = currentLocale();
   if (body !== undefined) {
     headers["Content-Type"] = "application/json";
   }
