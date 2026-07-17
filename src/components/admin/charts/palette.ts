@@ -30,3 +30,20 @@ export const GREEN_RAMP = [
 ] as const;
 
 export const PRIMARY = "#096C44";
+
+// Fixed-order categorical hues for identity breakdowns (e.g. users by role).
+// Assign by index, never cycle — a 9th slot folds into "Other".
+export const CATEGORICAL = [
+  "#096C44", // green
+  "#0EA5E9", // sky
+  "#8B5CF6", // violet
+  "#F59E0B", // amber
+  "#F43F5E", // rose
+  "#14B8A6", // teal
+  "#6366F1", // indigo
+  "#94A3B8", // slate
+] as const;
+
+export function categoricalColor(index: number): string {
+  return CATEGORICAL[index % CATEGORICAL.length];
+}

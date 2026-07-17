@@ -1,11 +1,18 @@
 "use client";
 
+import { useMemo } from "react";
 import { toast } from "sonner";
-import { PlusIcon, RefreshCwIcon } from "lucide-react";
+import {
+  KeyRoundIcon,
+  LockIcon,
+  PlusIcon,
+  RefreshCwIcon,
+  ShieldCheckIcon,
+  SlidersHorizontalIcon,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -20,6 +27,14 @@ import {
   RoleFormSheet,
   RolePermissionsSheet,
 } from "@/src/components/admin/role-forms";
+import {
+  PageHeader,
+  Panel,
+  PanelHead,
+  Reveal,
+  StatCard,
+} from "@/src/components/admin/DashboardKit";
+import HBarChart from "@/src/components/admin/charts/HBarChart";
 import { PROTECTED_ROLES } from "@/src/lib/api";
 import type { AppQueryError } from "@/src/store/baseQuery";
 import {
@@ -38,43 +53,118 @@ export default function AdminRolesPage() {
   const { data: permissions = [] } = useGetPermissionsQuery();
   const [deleteRole] = useDeleteRoleMutation();
 
+  const stats = useMemo(() => {
+    const list = roles ?? [];
+    const protectedCount = list.filter((r) => isProtected(r.name)).length;
+    const byPermissions = [...list]
+      .sort((a, b) => (b.permissions?.length ?? 0) - (a.permissions?.length ?? 0))
+      .slice(0, 8);
+    return {
+      total: list.length,
+      protectedCount,
+      custom: list.length - protectedCount,
+      byPermissions,
+    };
+  }, [roles]);
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Roles &amp; Permissions
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Define what each role can do. Client, admin and superadmin are
-            protected.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            disabled={isFetching}
-          >
-            <RefreshCwIcon
-              className={isFetching ? "size-4 animate-spin" : "size-4"}
+    <div className="w-full space-y-4 px-3 py-4 sm:px-4 lg:px-6 lg:py-5">
+      <PageHeader
+        title="Roles & Permissions"
+        subtitle="Define what each role can do. Client, admin and superadmin are protected."
+        actions={
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="h-9 rounded-full px-3.5"
+            >
+              <RefreshCwIcon className={isFetching ? "size-3.5 animate-spin" : "size-3.5"} />
+              <span className="hidden sm:inline">Refresh</span>
+            </Button>
+            <RoleFormSheet
+              trigger={
+                <Button size="sm" className="h-9 rounded-full px-4">
+                  <PlusIcon className="size-4" />
+                  Create role
+                </Button>
+              }
             />
-            <span className="hidden sm:inline">Refresh</span>
-          </Button>
-          <RoleFormSheet
-            trigger={
-              <Button size="sm">
-                <PlusIcon className="size-4" />
-                Create role
-              </Button>
-            }
-          />
-        </div>
+          </>
+        }
+      />
+
+      {/* Stat cards */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {isLoading || !roles ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-2xl" />
+          ))
+        ) : (
+          <>
+            <Reveal>
+              <StatCard
+                icon={ShieldCheckIcon}
+                label="Total roles"
+                value={stats.total.toLocaleString()}
+                note="Defined in the system"
+              />
+            </Reveal>
+            <Reveal delay={0.05}>
+              <StatCard
+                icon={SlidersHorizontalIcon}
+                label="Custom roles"
+                value={stats.custom.toLocaleString()}
+                note="Editable & removable"
+                accent="#0EA5E9"
+              />
+            </Reveal>
+            <Reveal delay={0.1}>
+              <StatCard
+                icon={LockIcon}
+                label="Protected roles"
+                value={stats.protectedCount.toLocaleString()}
+                note="Client, admin, superadmin"
+                accent="#8B5CF6"
+              />
+            </Reveal>
+            <Reveal delay={0.15}>
+              <StatCard
+                icon={KeyRoundIcon}
+                label="Permissions"
+                value={permissions.length.toLocaleString()}
+                note="Grantable capabilities"
+                accent="#F59E0B"
+              />
+            </Reveal>
+          </>
+        )}
       </div>
 
-      <Card>
-        <CardContent className="p-0">
+      {/* Permissions per role */}
+      {isLoading || !roles ? (
+        <Skeleton className="h-64 rounded-2xl" />
+      ) : stats.byPermissions.length > 0 ? (
+        <Reveal delay={0.1}>
+          <Panel>
+            <PanelHead title="Permissions per role" subtitle="Breadth of access" />
+            <div className="pt-4">
+              <HBarChart
+                labels={stats.byPermissions.map(
+                  (r) => r.name.charAt(0).toUpperCase() + r.name.slice(1),
+                )}
+                values={stats.byPermissions.map((r) => r.permissions?.length ?? 0)}
+                formatValue={(n) => `${n} permission${n === 1 ? "" : "s"}`}
+                height={Math.max(stats.byPermissions.length * 44, 160)}
+              />
+            </div>
+          </Panel>
+        </Reveal>
+      ) : null}
+
+      <Panel className="p-0">
           {isError ? (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
               <p className="text-sm font-medium text-destructive">
@@ -96,12 +186,13 @@ export default function AdminRolesPage() {
               No roles found.
             </div>
           ) : (
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Role</TableHead>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="pl-5">Role</TableHead>
                   <TableHead className="text-right">Permissions</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="pr-5 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -109,7 +200,7 @@ export default function AdminRolesPage() {
                   const protectedRole = isProtected(role.name);
                   return (
                     <TableRow key={role.id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="pl-5 font-medium">
                         <span className="capitalize">{role.name}</span>
                         {protectedRole ? (
                           <Badge
@@ -123,7 +214,7 @@ export default function AdminRolesPage() {
                       <TableCell className="text-right tabular-nums">
                         {role.permissions?.length ?? 0}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="pr-5 text-right">
                         <div className="flex justify-end gap-1">
                           <RolePermissionsSheet
                             role={role}
@@ -173,9 +264,9 @@ export default function AdminRolesPage() {
                 })}
               </TableBody>
             </Table>
+            </div>
           )}
-        </CardContent>
-      </Card>
+      </Panel>
     </div>
   );
 }

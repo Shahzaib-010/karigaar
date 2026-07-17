@@ -1,12 +1,17 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { PlusIcon } from "lucide-react";
+import {
+  BanknoteIcon,
+  LayersIcon,
+  LayoutGridIcon,
+  PlusIcon,
+  TagsIcon,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -22,7 +27,15 @@ import {
   PriceCategoryFormSheet,
   SubCategoryFormSheet,
 } from "@/src/components/admin/catalog-forms";
-import { formatPkr } from "@/src/lib/format";
+import {
+  PageHeader,
+  Panel,
+  PanelHead,
+  Reveal,
+  StatCard,
+} from "@/src/components/admin/DashboardKit";
+import HBarChart from "@/src/components/admin/charts/HBarChart";
+import { formatPkr, toNumber } from "@/src/lib/format";
 import { cn } from "@/lib/utils";
 import type { AppQueryError } from "@/src/store/baseQuery";
 import {
@@ -45,25 +58,104 @@ const TABS: { value: Tab; label: string }[] = [
 export default function AdminCatalogPage() {
   const [tab, setTab] = useState<Tab>("categories");
 
+  const { data: categories = [], isLoading: catLoading } = useGetCategoriesQuery();
+  const { data: subCategories = [] } = useGetSubCategoriesQuery();
+  const { data: priceCategories = [] } = useGetPriceCategoriesQuery();
+
+  const stats = useMemo(() => {
+    const activeCats = categories.filter((c) => c.status).length;
+    const prices = priceCategories.map((p) => toNumber(p.price)).filter((n) => n > 0);
+    const avgPrice = prices.length
+      ? prices.reduce((a, b) => a + b, 0) / prices.length
+      : 0;
+    const bySub = [...categories]
+      .map((c) => ({ name: c.name, count: c.sub_categories?.length ?? 0 }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8);
+    return { activeCats, avgPrice, bySub };
+  }, [categories, priceCategories]);
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Catalog</h1>
-        <p className="text-sm text-muted-foreground">
-          Categories, sub-categories and the bookable price plans.
-        </p>
+    <div className="w-full space-y-4 px-3 py-4 sm:px-4 lg:px-6 lg:py-5">
+      <PageHeader
+        title="Catalog"
+        subtitle="Categories, sub-categories and the bookable price plans."
+      />
+
+      {/* Stat cards */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {catLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-2xl" />
+          ))
+        ) : (
+          <>
+            <Reveal>
+              <StatCard
+                icon={LayoutGridIcon}
+                label="Categories"
+                value={categories.length.toLocaleString()}
+                note={`${stats.activeCats} active`}
+              />
+            </Reveal>
+            <Reveal delay={0.05}>
+              <StatCard
+                icon={LayersIcon}
+                label="Sub-categories"
+                value={subCategories.length.toLocaleString()}
+                note="Bookable services"
+                accent="#0EA5E9"
+              />
+            </Reveal>
+            <Reveal delay={0.1}>
+              <StatCard
+                icon={TagsIcon}
+                label="Price plans"
+                value={priceCategories.length.toLocaleString()}
+                note="Across all services"
+                accent="#8B5CF6"
+              />
+            </Reveal>
+            <Reveal delay={0.15}>
+              <StatCard
+                icon={BanknoteIcon}
+                label="Avg. price"
+                value={formatPkr(stats.avgPrice)}
+                note="Mean of all plans"
+                accent="#F59E0B"
+              />
+            </Reveal>
+          </>
+        )}
       </div>
 
-      <div className="inline-flex rounded-lg border bg-muted/40 p-1">
+      {/* Sub-categories per category */}
+      {!catLoading && stats.bySub.length > 0 ? (
+        <Reveal delay={0.1}>
+          <Panel>
+            <PanelHead title="Sub-categories per category" subtitle="Catalog depth" />
+            <div className="pt-4">
+              <HBarChart
+                labels={stats.bySub.map((c) => c.name)}
+                values={stats.bySub.map((c) => c.count)}
+                formatValue={(n) => `${n} sub-categor${n === 1 ? "y" : "ies"}`}
+                height={Math.max(stats.bySub.length * 44, 160)}
+              />
+            </div>
+          </Panel>
+        </Reveal>
+      ) : null}
+
+      <div className="inline-flex rounded-full border border-border/60 bg-muted/40 p-1">
         {TABS.map((t) => (
           <button
             key={t.value}
             type="button"
             onClick={() => setTab(t.value)}
             className={cn(
-              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
               tab === t.value
-                ? "bg-background text-foreground shadow-sm"
+                ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -122,33 +214,30 @@ function TableCard({
   children: ReactNode;
 }) {
   return (
-    <Card>
-      <CardContent className="p-0">
-        {isError ? (
-          <div className="flex flex-col items-center gap-3 py-12 text-center">
-            <p className="text-sm font-medium text-destructive">
-              {(error as AppQueryError | undefined)?.message ??
-                "Could not load."}
-            </p>
-            <Button variant="outline" size="sm" onClick={onRetry}>
-              Try again
-            </Button>
-          </div>
-        ) : isLoading ? (
-          <div className="space-y-2 p-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 rounded-md" />
-            ))}
-          </div>
-        ) : isEmpty ? (
-          <div className="py-12 text-center text-sm text-muted-foreground">
-            {emptyLabel}
-          </div>
-        ) : (
-          children
-        )}
-      </CardContent>
-    </Card>
+    <Panel className="p-0">
+      {isError ? (
+        <div className="flex flex-col items-center gap-3 py-12 text-center">
+          <p className="text-sm font-medium text-destructive">
+            {(error as AppQueryError | undefined)?.message ?? "Could not load."}
+          </p>
+          <Button variant="outline" size="sm" onClick={onRetry}>
+            Try again
+          </Button>
+        </div>
+      ) : isLoading ? (
+        <div className="space-y-2 p-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-10 rounded-md" />
+          ))}
+        </div>
+      ) : isEmpty ? (
+        <div className="py-12 text-center text-sm text-muted-foreground">
+          {emptyLabel}
+        </div>
+      ) : (
+        <div className="overflow-x-auto">{children}</div>
+      )}
+    </Panel>
   );
 }
 
