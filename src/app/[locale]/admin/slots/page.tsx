@@ -53,6 +53,7 @@ import {
   useDeleteBookingSlotMutation,
   useGetBookingSlotsQuery,
 } from "@/src/store/adminApi";
+import { livePolling } from "@/src/store/realtime";
 
 const ACTIVE_OPTIONS = [
   { value: "", label: "All" },
@@ -80,10 +81,10 @@ export default function AdminSlotsPage() {
   );
 
   const { data: slots, isLoading, isFetching, isError, error, refetch } =
-    useGetBookingSlotsQuery(args);
+    useGetBookingSlotsQuery(args, livePolling);
   // Unfiltered set for the headline stats + charts.
   const { data: allSlots = [], isLoading: statsLoading } =
-    useGetBookingSlotsQuery();
+    useGetBookingSlotsQuery(undefined, livePolling);
 
   const stats = useMemo(() => {
     let activeCount = 0;

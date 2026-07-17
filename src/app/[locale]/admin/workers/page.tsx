@@ -53,6 +53,7 @@ import {
   useGetCategoriesQuery,
   useGetWorkersQuery,
 } from "@/src/store/adminApi";
+import { livePolling } from "@/src/store/realtime";
 
 const STATUS_OPTIONS = [
   { value: "", label: "All statuses" },
@@ -77,11 +78,11 @@ export default function AdminWorkersPage() {
   );
 
   const { data: workers, isLoading, isFetching, isError, error, refetch } =
-    useGetWorkersQuery(args);
+    useGetWorkersQuery(args, livePolling);
   const { data: categories = [] } = useGetCategoriesQuery();
   // Unfiltered roster for the headline stats + charts (filters only drive the table).
   const { data: allWorkers = [], isLoading: rosterLoading } =
-    useGetWorkersQuery();
+    useGetWorkersQuery(undefined, livePolling);
 
   const counts = useMemo(() => {
     const c = { available: 0, busy: 0, inactive: 0 };

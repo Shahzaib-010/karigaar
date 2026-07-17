@@ -46,6 +46,7 @@ import {
   useGetDashboardStatsQuery,
   useGetOrdersQuery,
 } from "@/src/store/adminApi";
+import { livePolling } from "@/src/store/realtime";
 
 const STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "All statuses" },
@@ -89,9 +90,9 @@ export default function AdminOrdersPage() {
   );
 
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetOrdersQuery(args);
+    useGetOrdersQuery(args, livePolling);
   const { data: stats, isLoading: statsLoading, refetch: refetchStats } =
-    useGetDashboardStatsQuery();
+    useGetDashboardStatsQuery(undefined, livePolling);
 
   function onStatusChange(value: string) {
     setStatus(value);

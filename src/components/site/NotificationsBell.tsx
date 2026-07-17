@@ -12,6 +12,7 @@ import {
   useMarkAllNotificationsReadMutation,
   useMarkNotificationReadMutation,
 } from "@/src/store/clientApi";
+import { livePolling } from "@/src/store/realtime";
 
 export default function NotificationsBell() {
   const locale = useLocale();
@@ -19,7 +20,7 @@ export default function NotificationsBell() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const { data, refetch } = useGetNotificationsQuery();
+  const { data, refetch } = useGetNotificationsQuery(undefined, livePolling);
   const [markAllRead] = useMarkAllNotificationsReadMutation();
   const [markRead] = useMarkNotificationReadMutation();
 

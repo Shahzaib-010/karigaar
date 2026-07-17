@@ -21,6 +21,7 @@ import {
   useGetAvailableSlotsQuery,
   useGetCatalogQuery,
 } from "@/src/store/clientApi";
+import { livePolling } from "@/src/store/realtime";
 
 function hhmm(v: string) {
   return v ? v.slice(0, 5) : "";
@@ -62,7 +63,7 @@ export default function BookingFlow({
 
   const { data: slots, isFetching: slotsLoading } = useGetAvailableSlotsQuery(
     { date },
-    { skip: !date },
+    { skip: !date, ...livePolling },
   );
 
   // Locate the chosen price plan within the catalog tree.

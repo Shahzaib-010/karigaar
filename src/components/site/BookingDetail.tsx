@@ -28,6 +28,7 @@ import {
   useCancelOrderMutation,
   useGetMyOrderQuery,
 } from "@/src/store/clientApi";
+import { livePolling } from "@/src/store/realtime";
 
 const TIMELINE = [
   { key: "pending", label: "Requested" },
@@ -44,7 +45,10 @@ export default function BookingDetail({
   orderId: number;
 }) {
   const { data: order, isLoading, isError, error, refetch } =
-    useGetMyOrderQuery(orderId, { skip: !Number.isFinite(orderId) });
+    useGetMyOrderQuery(orderId, {
+      skip: !Number.isFinite(orderId),
+      ...livePolling,
+    });
 
   const [cancelOrder, { isLoading: cancelling }] = useCancelOrderMutation();
 

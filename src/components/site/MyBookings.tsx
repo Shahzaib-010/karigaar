@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { formatDateTime, formatPkr } from "@/src/lib/format";
 import type { AppQueryError } from "@/src/store/baseQuery";
 import { useGetMyOrdersQuery } from "@/src/store/clientApi";
+import { livePolling } from "@/src/store/realtime";
 
 const STATUS_FILTERS = [
   { value: "", label: "All" },
@@ -39,7 +40,7 @@ export default function MyBookings({ locale }: { locale: string }) {
   );
 
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetMyOrdersQuery(args);
+    useGetMyOrdersQuery(args, livePolling);
 
   return (
     <main className="min-h-[60vh] bg-[#f7faf9]">

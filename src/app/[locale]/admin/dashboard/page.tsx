@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 import { formatDate, formatPkr, toNumber } from "@/src/lib/format";
 import type { AppQueryError } from "@/src/store/baseQuery";
 import { useGetDashboardStatsQuery } from "@/src/store/adminApi";
+import { livePolling } from "@/src/store/realtime";
 import StatusBadge from "@/src/components/admin/StatusBadge";
 import {
   getInitials,
@@ -72,7 +73,7 @@ const STATUS_LABELS: Record<string, string> = {
 export default function AdminDashboardPage() {
   const pathname = usePathname();
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetDashboardStatsQuery();
+    useGetDashboardStatsQuery(undefined, livePolling);
 
   const locale = pathname.split("/")[1] || "en";
   const admin = `/${locale}/admin`;

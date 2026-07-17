@@ -28,6 +28,9 @@ function pickData<T>(res: unknown): T {
 export const clientApi = createApi({
   reducerPath: "clientApi",
   baseQuery: appBaseQuery,
+  // Re-sync the moment the user returns to the tab or reconnects.
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   tagTypes: [
     "Catalog",
     "MyOrder",

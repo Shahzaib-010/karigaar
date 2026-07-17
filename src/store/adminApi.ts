@@ -43,6 +43,9 @@ function pickData<T>(res: unknown): T {
 export const adminApi = createApi({
   reducerPath: "adminApi",
   baseQuery: appBaseQuery,
+  // Re-sync the moment the admin returns to the tab or reconnects.
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   tagTypes: [
     "DashboardStats",
     "Order",

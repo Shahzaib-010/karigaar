@@ -18,6 +18,7 @@ import StatusBadge from "@/src/components/admin/StatusBadge";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateTime, formatPkr } from "@/src/lib/format";
 import { useGetMyOrdersQuery } from "@/src/store/clientApi";
+import { livePolling } from "@/src/store/realtime";
 
 const STATUS_CARDS: { status: string; label: string; icon: LucideIcon }[] = [
   { status: "pending", label: "Pending", icon: ClockIcon },
@@ -32,7 +33,7 @@ export default function UserDashboard({ locale }: { locale: string }) {
   const firstName = user?.name?.split(" ")[0] ?? "there";
 
   // Recent orders + grand total (server scopes to the current user).
-  const { data: recent } = useGetMyOrdersQuery({ per_page: 5 });
+  const { data: recent } = useGetMyOrdersQuery({ per_page: 5 }, livePolling);
 
   return (
     <main className="min-h-[60vh] bg-[#f7faf9]">
@@ -133,7 +134,7 @@ function StatusCount({
   label: string;
   icon: LucideIcon;
 }) {
-  const { data } = useGetMyOrdersQuery({ status, per_page: 1 });
+  const { data } = useGetMyOrdersQuery({ status, per_page: 1 }, livePolling);
   return (
     <StatCard
       label={label}
