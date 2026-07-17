@@ -54,13 +54,11 @@ export default function NotificationsBell() {
         type="button"
         aria-label="Notifications"
         onClick={toggle}
-        className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card text-foreground transition hover:border-primary"
+        className="relative flex size-9 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
       >
         <BellIcon className="size-5" />
         {unread > 0 ? (
-          <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs font-bold text-white">
-            {unread > 9 ? "9+" : unread}
-          </span>
+          <span className="absolute right-1 top-1 flex size-2 rounded-full bg-primary ring-2 ring-card" />
         ) : null}
       </button>
 

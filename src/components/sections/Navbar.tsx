@@ -1,8 +1,7 @@
 "use client";
 
 import {
-  IconChevronDown,
-  IconClipboardList,
+  IconLayoutDashboard,
   IconLogout,
   IconMenu2,
   IconUser,
@@ -22,8 +21,8 @@ const navLinks = [
 ] as const;
 
 const menuItems = [
+  { label: "dashboard", icon: IconLayoutDashboard, href: "dashboard" },
   { label: "profile", icon: IconUser, href: "profile" },
-  { label: "bookings", icon: IconClipboardList, href: "bookings" },
 ] as const;
 
 function getInitials(name: string) {
@@ -110,30 +109,35 @@ export default function Navbar() {
               {t(`links.${link.label}`)}
             </Link>
           ))}
+          {isAuthenticated ? (
+            <Link
+              href={withLocale("bookings")}
+              className={`transition-colors hover:text-primary ${
+                isRtl ? "ur-nav-link" : ""
+              }`}
+            >
+              {t("menu.bookings")}
+            </Link>
+          ) : null}
         </nav>
 
-        <div className="ms-auto flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="ms-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
           <div
-            className="flex h-10 items-center rounded-xl border border-border bg-background p-1 text-xs font-bold text-muted-foreground sm:text-sm"
+            className="flex h-9 items-center rounded-lg border border-border bg-background p-0.5 text-xs font-semibold text-muted-foreground"
             aria-label={t("language")}
           >
             <Link
               href="/en"
-              className={`rounded-lg px-2.5 py-1.5 transition-colors sm:px-3 ${
-                locale === "en"
-                  ? "bg-primary text-white"
-                  : "hover:text-primary"
+              className={`rounded-md px-2 py-1 transition-colors ${
+                locale === "en" ? "bg-primary text-white" : "hover:text-primary"
               }`}
             >
               EN
             </Link>
-            <span className="px-0.5 text-border sm:px-1">/</span>
             <Link
               href="/ur"
-              className={`rounded-lg px-2.5 py-1.5 transition-colors sm:px-3 ${
-                locale === "ur"
-                  ? "bg-primary text-white"
-                  : "hover:text-primary"
+              className={`rounded-md px-2 py-1 transition-colors ${
+                locale === "ur" ? "bg-primary text-white" : "hover:text-primary"
               }`}
             >
               اردو
@@ -147,7 +151,7 @@ export default function Navbar() {
             </div>
             <Link
               href={withLocale("services")}
-              className="hidden rounded-lg border border-primary bg-primary px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-dark md:inline-flex"
+              className="hidden h-9 items-center rounded-lg bg-primary px-3.5 text-sm font-semibold text-white transition-colors hover:bg-primary-dark md:inline-flex"
             >
               {t("bookNow")}
             </Link>
@@ -156,61 +160,69 @@ export default function Navbar() {
                 type="button"
                 aria-haspopup="menu"
                 aria-expanded={isProfileOpen}
+                aria-label={firstName}
                 onClick={() => setIsProfileOpen((value) => !value)}
-                className="flex h-11 items-center gap-2 rounded-xl border border-border bg-card pe-3 ps-1.5 text-sm font-bold text-foreground transition hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+                className="flex size-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary/25"
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
-                  {initials}
-                </span>
-                <span>{firstName}</span>
-                <IconChevronDown size={18} stroke={1.8} />
+                {initials}
               </button>
 
               {isProfileOpen ? (
                 <div
                   role="menu"
-                  className="absolute end-0 z-50 mt-3 w-64 rounded-xl border border-border bg-card p-2 text-start"
+                  className="absolute end-0 z-50 mt-2 w-56 rounded-xl border border-border bg-card p-1.5 text-start shadow-lg"
                 >
-                  {menuItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={withLocale(item.href)}
-                        role="menuitem"
-                        onClick={() => setIsProfileOpen(false)}
-                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-foreground transition hover:bg-background"
-                      >
-                        <Icon size={19} stroke={1.8} />
-                        {t(`menu.${item.label}`)}
-                      </Link>
-                    );
-                  })}
-                  <div className="my-2 border-t border-border" />
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={handleLogout}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start text-sm font-bold text-error transition hover:bg-background"
-                  >
-                    <IconLogout size={19} stroke={1.8} />
-                    {t("menu.logout")}
-                  </button>
+                  <div className="border-b border-border px-3 py-2">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {user.name}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                  <div className="py-1">
+                    {menuItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={withLocale(item.href)}
+                          role="menuitem"
+                          onClick={() => setIsProfileOpen(false)}
+                          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-foreground transition hover:bg-background"
+                        >
+                          <Icon size={17} stroke={1.8} />
+                          {t(`menu.${item.label}`)}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                  <div className="border-t border-border pt-1">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-start text-sm font-medium text-error transition hover:bg-background"
+                    >
+                      <IconLogout size={17} stroke={1.8} />
+                      {t("menu.logout")}
+                    </button>
+                  </div>
                 </div>
               ) : null}
             </div>
             </>
           ) : (
-            <div className="hidden items-center gap-2 md:flex">
+            <div className="hidden items-center gap-1 md:flex">
               <Link
                 href={withLocale("login")}
-                className="rounded-lg border border-primary bg-card px-4 py-2.5 text-sm font-bold text-primary transition-colors hover:bg-primary/5"
+                className="inline-flex h-9 items-center rounded-lg px-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/5"
               >
                 {t("login")}
               </Link>
               <Link
                 href={withLocale("signup")}
-                className="rounded-lg border border-primary bg-primary px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-dark"
+                className="inline-flex h-9 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-primary-dark"
               >
                 {t("signup")}
               </Link>
@@ -222,7 +234,7 @@ export default function Navbar() {
             aria-label={t("openMenu")}
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen(true)}
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-card text-foreground md:hidden"
+            className="flex size-9 items-center justify-center rounded-lg text-foreground transition hover:bg-muted md:hidden"
           >
             <IconMenu2 size={22} stroke={1.8} />
           </button>
@@ -270,6 +282,17 @@ export default function Navbar() {
               {t(`links.${link.label}`)}
             </Link>
           ))}
+          {isAuthenticated ? (
+            <Link
+              href={withLocale("bookings")}
+              onClick={() => setIsMenuOpen(false)}
+              className={`text-4xl font-bold leading-none text-foreground transition-colors hover:text-primary ${
+                isRtl ? "ur-nav-link" : ""
+              }`}
+            >
+              {t("menu.bookings")}
+            </Link>
+          ) : null}
         </nav>
 
         <div className="pb-4">
@@ -287,6 +310,22 @@ export default function Navbar() {
                     {user.roles?.[0]}
                   </p>
                 </div>
+              </div>
+              <div className="mb-3 grid gap-1">
+                {menuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={withLocale(item.href)}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-foreground transition hover:bg-background"
+                    >
+                      <Icon size={19} stroke={1.8} />
+                      {t(`menu.${item.label}`)}
+                    </Link>
+                  );
+                })}
               </div>
               <Link
                 href={withLocale("services")}

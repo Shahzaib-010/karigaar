@@ -2,12 +2,18 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, RefreshCwIcon } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarIcon,
+  HashIcon,
+  RefreshCwIcon,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import StatusBadge from "@/src/components/admin/StatusBadge";
+import { cn } from "@/lib/utils";
 import { formatDateTime, formatPkr } from "@/src/lib/format";
 import type { AppQueryError } from "@/src/store/baseQuery";
 import { useGetMyOrdersQuery } from "@/src/store/clientApi";
@@ -37,10 +43,10 @@ export default function MyBookings({ locale }: { locale: string }) {
 
   return (
     <main className="min-h-[60vh] bg-[#f7faf9]">
-      <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-6 flex items-center justify-between gap-3">
+      <div className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-6 flex items-end justify-between gap-3">
           <div>
-            <h1 className="font-karigaar text-3xl font-bold text-slate-950">
+            <h1 className="font-karigaar text-3xl font-bold text-slate-950 sm:text-4xl">
               My Bookings
             </h1>
             <p className="mt-1 text-sm text-slate-600">
@@ -61,7 +67,7 @@ export default function MyBookings({ locale }: { locale: string }) {
         </div>
 
         {/* Status filter */}
-        <div className="mb-5 flex flex-wrap gap-2">
+        <div className="mb-6 flex flex-wrap gap-2 overflow-x-auto">
           {STATUS_FILTERS.map((f) => (
             <button
               key={f.value}
@@ -70,11 +76,12 @@ export default function MyBookings({ locale }: { locale: string }) {
                 setStatus(f.value);
                 setPage(1);
               }}
-              className={
+              className={cn(
+                "whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
                 status === f.value
-                  ? "rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
-                  : "rounded-full border border-input bg-white px-3 py-1.5 text-sm text-slate-600 hover:border-primary"
-              }
+                  ? "bg-[var(--primary)] text-white shadow-sm"
+                  : "border border-slate-200 bg-white text-slate-600 hover:border-[var(--primary)] hover:text-[var(--primary)]",
+              )}
             >
               {f.label}
             </button>
@@ -96,14 +103,19 @@ export default function MyBookings({ locale }: { locale: string }) {
         ) : isLoading || !data ? (
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-24 rounded-xl" />
+              <Skeleton key={i} className="h-24 rounded-2xl" />
             ))}
           </div>
         ) : data.data.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
+          <Card className="rounded-2xl">
+            <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
+              <div className="flex size-14 items-center justify-center rounded-2xl bg-[#E6F4EF] text-2xl text-[var(--primary)]">
+                📋
+              </div>
               <p className="text-sm text-muted-foreground">
-                You have no bookings yet.
+                {status
+                  ? "No bookings with this status."
+                  : "You have no bookings yet."}
               </p>
               <Button asChild>
                 <Link href={`/${locale}/services`}>Book a service</Link>
@@ -118,27 +130,41 @@ export default function MyBookings({ locale }: { locale: string }) {
                 href={`/${locale}/bookings/${order.id}`}
                 className="block"
               >
-                <Card className="transition-colors hover:border-primary">
-                  <CardContent className="flex items-center justify-between gap-4">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-slate-900">
+                <Card className="group rounded-2xl border-slate-200 shadow-sm transition-all hover:-translate-y-0.5 hover:border-[var(--primary)] hover:shadow-[0_14px_36px_rgba(1,73,62,0.10)]">
+                  <CardContent className="flex items-center gap-4 p-5">
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#E6F4EF] text-lg font-bold uppercase text-[var(--primary)]">
+                      {order.category?.name?.charAt(0) ?? "•"}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="truncate text-base font-semibold text-slate-900">
                           {order.category?.name ?? "Service"}
-                        </span>
+                        </h3>
                         <StatusBadge status={order.status} />
                       </div>
-                      <p className="mt-1 truncate text-sm text-slate-600">
-                        {order.sub_category?.title ?? ""}
-                      </p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {formatDateTime(order.scheduled_at)} · #{order.id}
-                      </p>
+                      {order.sub_category?.title ? (
+                        <p className="mt-0.5 truncate text-sm text-slate-600">
+                          {order.sub_category.title}
+                        </p>
+                      ) : null}
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1">
+                          <CalendarIcon className="size-3.5" />
+                          {formatDateTime(order.scheduled_at)}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <HashIcon className="size-3.5" />
+                          {order.id}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex shrink-0 items-center gap-3">
-                      <span className="text-sm font-bold text-slate-900">
+
+                    <div className="flex shrink-0 flex-col items-end gap-1">
+                      <span className="text-base font-bold text-slate-900">
                         {formatPkr(order.total_amount)}
                       </span>
-                      <ArrowRight className="size-4 text-muted-foreground" />
+                      <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--primary)]" />
                     </div>
                   </CardContent>
                 </Card>

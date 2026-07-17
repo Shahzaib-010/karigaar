@@ -26,6 +26,7 @@
       "home": "Home"
     },
     "menu": {
+      "dashboard": "Dashboard",
       "profile": "My Profile",
       "bookings": "My Bookings",
       "settings": "Settings",

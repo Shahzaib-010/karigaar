@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import AdminGuard from "@/src/components/admin/AdminGuard";
@@ -23,10 +22,9 @@ export default async function AdminLayout({
     <AdminGuard locale={locale}>
       <SidebarProvider>
         <AdminSidebar locale={locale} />
-        <SidebarRail />
         <SidebarInset>
-          <AdminTopbar locale={locale} />
-          <div className="flex-1 p-4 sm:p-6">{children}</div>
+          <AdminTopbar />
+          <div className="flex-1">{children}</div>
         </SidebarInset>
       </SidebarProvider>
       <Toaster position="top-right" richColors />

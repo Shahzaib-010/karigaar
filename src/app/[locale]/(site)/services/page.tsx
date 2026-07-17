@@ -2,15 +2,12 @@
 
 import { useLocale } from "next-intl";
 
-import ClientGuard from "@/src/components/site/ClientGuard";
 import ServicesBrowse from "@/src/components/site/ServicesBrowse";
 
 export default function ServicesPage() {
   const locale = useLocale();
 
-  return (
-    <ClientGuard locale={locale}>
-      <ServicesBrowse locale={locale} />
-    </ClientGuard>
-  );
+  // Public — anyone can browse the catalog. The Book action (in ServicesBrowse)
+  // is the auth checkpoint: signed-out users are sent to login first.
+  return <ServicesBrowse locale={locale} />;
 }
