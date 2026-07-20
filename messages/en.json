@@ -61,6 +61,14 @@
       "password": "Password is required.",
       "invalidResponse": "The login API did not return user data.",
       "submit": "We could not log you in. Please try again."
+    },
+    "verify": {
+      "notVerified": "Your email isn't verified yet.",
+      "action": "Verify now",
+      "heading": "Verify your email",
+      "sent": "We emailed a fresh 6-digit code to your address. Enter it below to finish.",
+      "verified": "Email verified — signing you in…",
+      "back": "Back to login"
     }
   },
   "signup": {

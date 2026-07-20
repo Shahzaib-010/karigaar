@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconChevronDown } from "@tabler/icons-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
@@ -353,6 +354,16 @@ export default function SignupPage() {
                       t("details.submit")
                     )}
                   </Button>
+
+                  <p className="text-center text-xs text-muted-foreground sm:text-sm">
+                    {isRtl ? "پہلے سے اکاؤنٹ ہے؟ " : "Already have an account? "}
+                    <Link
+                      href={`/${locale}/login`}
+                      className="font-semibold text-primary hover:underline"
+                    >
+                      {isRtl ? "لاگ ان کریں" : "Log in"}
+                    </Link>
+                  </p>
                 </motion.form>
               ) : null}
 
