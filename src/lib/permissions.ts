@@ -5,20 +5,48 @@ import { useAuth } from "@/context/AuthContext";
 import type { RoleName } from "@/src/lib/api";
 
 /**
- * Map the backend's `redirect_to` hint onto a real app path.
+ * Map a logged-in user to their landing path.
  *
- * The API returns "/dashboard" (client), "/admin/dashboard" (admin) or
- * "/superadmin/dashboard" (superadmin). We run a single admin panel, so admin
- * AND superadmin both land on /admin/dashboard; clients land on the services
- * page to browse and book. All paths are locale-prefixed.
+ * The backend's `redirect_to` only distinguishes client/admin/superadmin
+ * ("/dashboard", "/admin/dashboard", "/superadmin/dashboard") — it has no
+ * worker hint — so we resolve by ROLE, with `redirect_to` as a fallback:
+ *   admin/superadmin → /admin/dashboard   (single combined panel)
+ *   worker           → /worker/dashboard
+ *   otherwise        → /services          (client browses + books)
+ * All paths are locale-prefixed.
  */
+/** Case-insensitive role check — the backend's role casing isn't guaranteed. */
+function hasRoleName(roles: readonly RoleName[], name: string): boolean {
+  return roles.some((r) => String(r).toLowerCase() === name);
+}
+
+/**
+ * The dedicated portal path for a role, or null for clients (whose home is the
+ * public site). Used to point admins/workers back to their dashboard from the
+ * public site, so they never hit a dead end.
+ */
+export function roleDashboardPath(
+  roles: readonly RoleName[],
+  locale: string,
+): string | null {
+  if (hasRoleName(roles, "admin") || hasRoleName(roles, "superadmin")) {
+    return `/${locale}/admin/dashboard`;
+  }
+  if (hasRoleName(roles, "worker")) return `/${locale}/worker/dashboard`;
+  return null;
+}
+
 export function resolveRedirectPath(
   redirectTo: string | null | undefined,
   locale: string,
+  roles: readonly RoleName[] = [],
 ): string {
-  const target = redirectTo ?? "";
-  if (target.includes("admin")) {
+  const target = (redirectTo ?? "").toLowerCase();
+  if (target.includes("admin") || hasRoleName(roles, "admin") || hasRoleName(roles, "superadmin")) {
     return `/${locale}/admin/dashboard`;
+  }
+  if (hasRoleName(roles, "worker") || target.includes("worker")) {
+    return `/${locale}/worker/dashboard`;
   }
   return `/${locale}/services`;
 }
@@ -35,8 +63,9 @@ export function usePermissions() {
       permissions,
       canAny: (perms: string[]) => perms.some((p) => can(p)),
       canAll: (perms: string[]) => perms.every((p) => can(p)),
-      isAdmin: hasRole("admin") || hasRole("superadmin"),
-      isSuperadmin: hasRole("superadmin"),
+      isAdmin: hasRoleName(roles, "admin") || hasRoleName(roles, "superadmin"),
+      isSuperadmin: hasRoleName(roles, "superadmin"),
+      isWorker: hasRoleName(roles, "worker"),
     }),
     [can, hasRole, roles, permissions],
   );

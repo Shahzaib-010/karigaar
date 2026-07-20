@@ -162,7 +162,7 @@ export default function SignupPage() {
       });
 
       login({ ...user, city: pending.city }, access_token);
-      router.push(resolveRedirectPath(redirect_to, locale));
+      router.push(resolveRedirectPath(redirect_to, locale, user.roles));
     } catch (error) {
       setOtpError(error instanceof ApiError ? error.message : t("otp.incorrect"));
     } finally {

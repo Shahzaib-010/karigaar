@@ -104,6 +104,24 @@ export const clientApi = createApi({
       ],
     }),
 
+    // Worker updates the status of a job assigned to them (permission-gated
+    // server-side via order.manage). Same /status endpoint the admin uses.
+    updateOrderStatus: builder.mutation<
+      unknown,
+      { id: number; status: string }
+    >({
+      query: ({ id, status }) => ({
+        url: `/orders/${id}/status`,
+        method: "PATCH",
+        body: { status },
+      }),
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: "MyOrder", id },
+        { type: "MyOrder", id: "LIST" },
+        "Notification",
+      ],
+    }),
+
     // ─── Notifications ──────────────────────────────────────────────
     getNotifications: builder.query<NotificationsResponse, void>({
       query: () => ({ url: "/notifications" }),
@@ -142,6 +160,7 @@ export const {
   useGetMyOrderQuery,
   useCreateOrderMutation,
   useCancelOrderMutation,
+  useUpdateOrderStatusMutation,
   useGetNotificationsQuery,
   useMarkAllNotificationsReadMutation,
   useMarkNotificationReadMutation,

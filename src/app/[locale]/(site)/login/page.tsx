@@ -56,7 +56,7 @@ export default function LoginPage() {
       const dest =
         next && next.startsWith("/")
           ? next
-          : resolveRedirectPath(redirect_to, locale);
+          : resolveRedirectPath(redirect_to, locale, user.roles);
       router.push(dest);
     } catch (error) {
       setSubmitError(

@@ -48,6 +48,16 @@ export default function Navbar() {
   const initials = useMemo(() => getInitials(user?.name ?? ""), [user?.name]);
   const withLocale = (path: string) => `/${locale}/${path}`;
 
+  // Route the "Dashboard" menu item to the right home for the user's role.
+  const roles = user?.roles ?? [];
+  const dashboardHref = roles.some((r) => r === "admin" || r === "superadmin")
+    ? withLocale("admin/dashboard")
+    : roles.includes("worker")
+      ? withLocale("worker/dashboard")
+      : withLocale("dashboard");
+  const menuHref = (href: string) =>
+    href === "dashboard" ? dashboardHref : withLocale(href);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -186,7 +196,7 @@ export default function Navbar() {
                       return (
                         <Link
                           key={item.href}
-                          href={withLocale(item.href)}
+                          href={menuHref(item.href)}
                           role="menuitem"
                           onClick={() => setIsProfileOpen(false)}
                           className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-foreground transition hover:bg-background"
@@ -317,7 +327,7 @@ export default function Navbar() {
                   return (
                     <Link
                       key={item.href}
-                      href={withLocale(item.href)}
+                      href={menuHref(item.href)}
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-foreground transition hover:bg-background"
                     >

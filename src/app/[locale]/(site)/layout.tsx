@@ -2,6 +2,7 @@
 
 import Navbar from "@/src/components/sections/Navbar";
 import Footer from "@/src/components/sections/Footer";
+import PortalBanner from "@/src/components/site/PortalBanner";
 import { usePathname } from "next/navigation";
 
 type SiteLayoutProps = {
@@ -15,6 +16,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
   return (
     <div className="flex flex-1 flex-col">
       <Navbar />
+      {isAuthRoute ? null : <PortalBanner />}
       {children}
       {isAuthRoute ? null : <Footer />}
     </div>
